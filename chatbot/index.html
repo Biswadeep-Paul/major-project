@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Medical AI Chatbot</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      background-color: #f4f4f4;
+    }
+    /* Chatbot Button */
+    .chatbot-button {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      cursor: pointer;
+      font-size: 24px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    /* Chatbot Container */
+    .chat-container {
+      width: 350px;
+      height: 500px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      display: none;
+      flex-direction: column;
+      position: fixed;
+      bottom: 90px;
+      right: 20px;
+      overflow: hidden;
+      z-index: 1000;
+    }
+
+    .chat-header {
+      background-color: #007bff;
+      color: white;
+      padding: 10px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .chat-window {
+      flex: 1;
+      padding: 16px;
+      overflow-y: auto;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .message {
+      margin-bottom: 12px;
+      padding: 8px 12px;
+      border-radius: 12px;
+      max-width: 80%;
+      clear: both;
+      white-space: pre-wrap;
+    }
+
+    .user {
+      background-color: #d1e7ff;
+      align-self: flex-end;
+      float: right;
+      text-align: right;
+    }
+
+    .bot {
+      background-color: #e2e2e2;
+      align-self: flex-start;
+      float: left;
+      text-align: left;
+    }
+
+    .input-container {
+      display: flex;
+      border-top: 1px solid #ddd;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      outline: none;
+    }
+
+    button {
+      padding: 10px;
+      border: none;
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Chatbot Button -->
+  <button class="chatbot-button" id="chatbotButton">💬</button>
+
+  <!-- Chatbot Container -->
+  <div class="chat-container" id="chatContainer">
+    <div class="chat-header">Medical AI Chatbot</div>
+    <div class="chat-window" id="chatWindow"></div>
+    <div class="input-container">
+      <input type="text" id="userInput" placeholder="Ask about medical topics...">
+      <button id="sendButton">Send</button>
+    </div>
+  </div>
+
+  <script type="module">
+    import { GoogleGenerativeAI } from "https://esm.sh/@google/generative-ai";
+
+    const genAI = new GoogleGenerativeAI("AIzaSyCTLJ2cemoCLBBeJGXMEewUq9x0fjtI8JY");
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+
+    const chatContainer = document.getElementById("chatContainer");
+    const chatbotButton = document.getElementById("chatbotButton");
+    const chatWindow = document.getElementById("chatWindow");
+    const userInput = document.getElementById("userInput");
+    const sendButton = document.getElementById("sendButton");
+
+    // Toggle Chatbot Visibility
+    chatbotButton.addEventListener("click", () => {
+      chatContainer.style.display = chatContainer.style.display === "flex" ? "none" : "flex";
+    });
+
+    async function sendMessage() {
+      const userText = userInput.value.trim();
+      if (!userText) return;
+
+      appendMessage("You", userText, "user");
+      userInput.value = "";
+
+      try {
+        const medicalPrompt = `You are a medical assistant. Answer only medical and medical medicine related questions. If the question is unrelated, politely inform the user that you only handle medical queries. Question: ${userText}`;
+        const result = await model.generateContent(medicalPrompt);
+        const botResponse = result.response.text();
+        appendMessage("Bot", botResponse, "bot");
+      } catch (error) {
+        appendMessage("Bot", "Sorry, there was an error. Please try again.", "bot");
+        console.error(error);
+      }
+    }
+
+    function appendMessage(sender, text, className) {
+      const messageDiv = document.createElement("div");
+      messageDiv.classList.add("message", className);
+      messageDiv.textContent = `${sender}:\n${text}`;
+      chatWindow.appendChild(messageDiv);
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+
+    // Attach event listeners
+    sendButton.addEventListener("click", sendMessage);
+    userInput.addEventListener("keypress", function (e) {
+      if (e.key === "Enter") {
+        sendMessage();
+      }
+    });
+  </script>
+
+</body>
+</html>
