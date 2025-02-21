@@ -11,6 +11,8 @@ import Appointment from "./pages/Appointment";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import logo from "./assets/logo.svg"; // Adjust path if needed
+import MedicalChatbot from './components/MedicalChatbot';
+
 
 const App = () => {
   const [loading, setLoading] = useState(true);
@@ -48,7 +50,12 @@ const App = () => {
         <Route path="/appointment/:docId" element={<Appointment />} />
       </Routes>
       <Footer />
+      <div>
+      <h1>Your App Content</h1>
+      <MedicalChatbot />
     </div>
+    </div>
+    
   );
 };
 
