@@ -51,7 +51,6 @@ const App = () => {
       </Routes>
       <Footer />
       <div>
-      <h1>Your App Content</h1>
       <MedicalChatbot />
     </div>
     </div>
