@@ -86,11 +86,11 @@ const addDoctor = async (req, res) => {
 
     try {
 
-        const { name, email, password, speciality, degree, experience, about, fees, address ,availability} = req.body
+        const { name, email, password, speciality, degree, experience, about, fees, address ,availability,location} = req.body
         const imageFile = req.file
 
         // checking for all data to add doctor
-        if (!name || !email || !password || !speciality || !degree || !experience || !about || !fees || !address) {
+        if (!name || !email || !password || !speciality || !degree || !experience || !about || !fees || !address||!location) {
             return res.json({ success: false, message: "Missing Details" })
         }
 
@@ -122,6 +122,7 @@ const addDoctor = async (req, res) => {
             experience,
             about,
             fees,
+            location,
             address: JSON.parse(address),
             date: Date.now()
         }
