@@ -37,6 +37,7 @@ const App = () => {
           <Route path='/doctor-profile' element={<DoctorProfile />} />
         </Routes>
       </div>
+     
     </div>
   ) : (
     <>

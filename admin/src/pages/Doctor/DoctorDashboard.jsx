@@ -5,6 +5,7 @@ import { DoctorContext } from '../../context/DoctorContext'
 import { assets } from '../../assets/assets'
 import { AppContext } from '../../context/AppContext'
 
+
 const DoctorDashboard = () => {
 
   const { dToken, dashData, getDashData, cancelAppointment, completeAppointment } = useContext(DoctorContext)
@@ -68,12 +69,15 @@ const DoctorDashboard = () => {
                     <img onClick={() => completeAppointment(item._id)} className='w-10 cursor-pointer' src={assets.tick_icon} alt="" />
                   </div>
               }
+              
             </div>
+             
           ))}
         </div>
       </div>
-
+      
     </div>
+    
   )
 }
 
