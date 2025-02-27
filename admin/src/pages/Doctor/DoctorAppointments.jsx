@@ -1,9 +1,8 @@
-import React, { useContext, useEffect } from 'react'
+import  { useContext, useEffect } from 'react'
 import { DoctorContext } from '../../context/DoctorContext'
 import { AppContext } from '../../context/AppContext'
 import { assets } from '../../assets/assets'
-import MedicalChatbot from '/Users/adityadebchowdhury/Desktop/HEALTH/chatbot/MedicalChatbot.jsx';
-
+import MedicalChatbot from '../Doctor/MedicalChatbot'
 const DoctorAppointments = () => {
 
   const { dToken, appointments, getAppointments, cancelAppointment, completeAppointment } = useContext(DoctorContext)
@@ -63,10 +62,9 @@ const DoctorAppointments = () => {
       </div>
 
       {/* Right: Chatbot Section */}
-      <div className='w-1/4 bg-white border rounded h-[80vh] p-4 overflow-y-auto'>
-        <p className='text-lg font-medium mb-3'>Medical Chatbot</p>
-        <MedicalChatbot />
-      </div>
+      
+      <MedicalChatbot/>
+      
 
     </div>
   )

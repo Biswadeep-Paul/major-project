@@ -11,7 +11,7 @@ import Appointment from "./pages/Appointment";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import logo from "./assets/logo.svg"; // Adjust path if needed
-import MedicalChatbot from '/Users/adityadebchowdhury/Desktop/HEALTH/chatbot/MedicalChatbot.jsx';
+import MedicalChatbot from './components/MedicalChatbot'
 
 
 const App = () => {

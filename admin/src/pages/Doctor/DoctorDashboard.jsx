@@ -1,10 +1,11 @@
-import React from 'react'
+//import React from 'react'
 import { useContext } from 'react'
 import { useEffect } from 'react'
 import { DoctorContext } from '../../context/DoctorContext'
 import { assets } from '../../assets/assets'
 import { AppContext } from '../../context/AppContext'
 
+import MedicalChatbot from '../Doctor/MedicalChatbot'
 
 const DoctorDashboard = () => {
 
@@ -75,7 +76,7 @@ const DoctorDashboard = () => {
           ))}
         </div>
       </div>
-      
+      <MedicalChatbot/>
     </div>
     
   )

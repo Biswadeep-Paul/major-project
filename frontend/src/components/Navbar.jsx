@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 import { assets } from "../assets/assets";
 import { NavLink, useNavigate } from "react-router-dom";
 
@@ -25,6 +25,9 @@ const Navbar = () => {
                 </NavLink>
                 <NavLink to="/contact" className="py-1">
                     CONTACT
+                </NavLink>
+                <NavLink to="http://localhost:5175/" className="py-1">
+                    AI
                 </NavLink>
             </ul>
 
