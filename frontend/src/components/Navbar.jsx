@@ -1,4 +1,8 @@
-import React, { useState } from "react";
+
+import  { useState } from "react";
+
+import  { useState } from "react";
+
 import { assets } from "../assets/assets";
 import { NavLink, useNavigate } from "react-router-dom";
 
@@ -16,6 +20,7 @@ const Navbar = () => {
             <ul className="hidden md:flex items-start gap-5 font-medium">
                 <NavLink to="/" className="py-1">
                     HOME
+
                 </NavLink>
                 <NavLink to="/doctors" className="py-1">
                     ALL DOCTORS
@@ -25,6 +30,12 @@ const Navbar = () => {
                 </NavLink>
                 <NavLink to="/contact" className="py-1">
                     CONTACT
+
+                </NavLink>
+               
+                <NavLink to="http://localhost:5175/" className="py-1">
+                    AI
+
                 </NavLink>
             </ul>
 
