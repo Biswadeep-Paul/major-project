@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import  { useState, useEffect } from "react";
 import { Route, Routes } from "react-router";
 import Home from "./pages/Home";
 import Doctors from "./pages/Doctors";
@@ -11,8 +11,8 @@ import Appointment from "./pages/Appointment";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import logo from "./assets/logo.svg"; // Adjust path if needed
-import MedicalChatbot from './components/MedicalChatbot';
-
+import MedicalChatbot from './components/MedicalChatbot'
+import { ToastContainer, toast } from 'react-toastify';
 
 const App = () => {
   const [loading, setLoading] = useState(true);
@@ -37,6 +37,7 @@ const App = () => {
 
   return (
     <div className="mx-4 sm:mx-[10%]">
+      <ToastContainer/>
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
