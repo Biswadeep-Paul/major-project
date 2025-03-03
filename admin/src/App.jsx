@@ -1,4 +1,4 @@
-import     { useContext } from 'react'
+import React, { useContext } from 'react'
 import { DoctorContext } from './context/DoctorContext';
 import { AdminContext } from './context/AdminContext';
 import { Route, Routes } from 'react-router-dom'
@@ -37,7 +37,6 @@ const App = () => {
           <Route path='/doctor-profile' element={<DoctorProfile />} />
         </Routes>
       </div>
-     
     </div>
   ) : (
     <>

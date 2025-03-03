@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { DoctorContext } from '../../context/DoctorContext'
 import { AppContext } from '../../context/AppContext'
 import { toast } from 'react-toastify'
@@ -18,8 +18,7 @@ const DoctorProfile = () => {
                 address: profileData.address,
                 fees: profileData.fees,
                 about: profileData.about,
-                available: profileData.available,
-                location:profileData.location
+                available: profileData.available
             }
 
             const { data } = await axios.post(backendUrl + '/api/doctor/update-profile', updateData, { headers: { dToken } })
@@ -88,25 +87,7 @@ const DoctorProfile = () => {
                             {isEdit ? <input type='text' onChange={(e) => setProfileData(prev => ({ ...prev, address: { ...prev.address, line2: e.target.value } }))} value={profileData.address.line2} /> : profileData.address.line2}
                         </p>
                     </div>
-                    {/* <p className='text-gray-600 font-medium mt-4'>LOCATIION:
-                    {isEdit ? <input type='number' onChange={(e) => setProfileData(prev => ({ ...prev, location: e.target.value }))} value={profileData.location} /> : profileData.location}
-                    </p> */}
-                    <p className='text-gray-600 font-medium mt-4'>Location:
-  {isEdit ? (
-    <input 
-      type='text' 
-      placeholder='Enter location' 
-      onChange={(e) => setProfileData(prev => ({ 
-        ...prev, 
-        location: e.target.value 
-      }))} 
-      value={profileData.location || ''} 
-      className='border p-1 rounded ml-2'
-    />
-  ) : (
-    <span className='ml-2'>{profileData.location}</span>
-  )}
-</p>
+
                     <div className='flex gap-1 pt-2'>
                         <input type="checkbox" onChange={() => isEdit && setProfileData(prev => ({ ...prev, available: !prev.available }))} checked={profileData.available} />
                         <label htmlFor="">Available</label>

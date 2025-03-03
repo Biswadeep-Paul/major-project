@@ -126,7 +126,7 @@ const MedicalChatbot = () => {
                 d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
               />
             </svg>
-            <h2 className="font-bold text-lg sm:text-xl truncate">HealthAssist Medical Chat</h2>
+            <h2 className="font-bold text-lg sm:text-xl truncate">HealthAssist Medical Chat BETA</h2>
           </div>
           <div className="text-xs sm:text-sm text-blue-100 hidden sm:block">Your AI-powered medical assistant</div>
         </div>
