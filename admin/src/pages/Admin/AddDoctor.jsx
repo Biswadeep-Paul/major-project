@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { assets } from '../../assets/assets'
 import { toast } from 'react-toastify'
 import axios from 'axios'
@@ -16,7 +16,6 @@ const AddDoctor = () => {
     const [about, setAbout] = useState('')
     const [speciality, setSpeciality] = useState('General physician')
     const [degree, setDegree] = useState('')
-    const [location, setLocation] = useState('')
     const [address1, setAddress1] = useState('')
     const [address2, setAddress2] = useState('')
 
@@ -43,7 +42,6 @@ const AddDoctor = () => {
             formData.append('about', about)
             formData.append('speciality', speciality)
             formData.append('degree', degree)
-            formData.append('location', location)
             formData.append('address', JSON.stringify({ line1: address1, line2: address2 }))
 
             // console log formdata            
@@ -60,7 +58,6 @@ const AddDoctor = () => {
                 setEmail('')
                 setAddress1('')
                 setAddress2('')
-                setLocation('')
                 setDegree('')
                 setAbout('')
                 setFees('')
@@ -156,11 +153,7 @@ const AddDoctor = () => {
                             <input onChange={e => setAddress1(e.target.value)} value={address1} className='border rounded px-3 py-2' type="text" placeholder='Address 1' required />
                             <input onChange={e => setAddress2(e.target.value)} value={address2} className='border rounded px-3 py-2' type="text" placeholder='Address 2' required />
                         </div>
-                        <div className='flex-1 flex flex-col gap-1'>
-                            <p>Location</p>
-                            <input onChange={e => setLocation(e.target.value)} value={location} className='border rounded px-3 py-2' type="text" placeholder='Location' required />
-                          
-                        </div>
+
                     </div>
 
                 </div>
