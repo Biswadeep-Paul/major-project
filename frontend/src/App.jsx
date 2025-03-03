@@ -14,6 +14,7 @@ import logo from "./assets/logo.svg"; // Adjust path if needed
 import MedicalChatbot from './components/MedicalChatbot'
 import { ToastContainer, toast } from 'react-toastify';
 
+
 const App = () => {
   const [loading, setLoading] = useState(true);
 
