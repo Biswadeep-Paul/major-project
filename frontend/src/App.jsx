@@ -12,6 +12,7 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import logo from "./assets/logo.svg"; // Adjust path if needed
 import MedicalChatbot from './components/MedicalChatbot'
+import { ToastContainer, toast } from 'react-toastify';
 
 
 const App = () => {
@@ -37,6 +38,7 @@ const App = () => {
 
   return (
     <div className="mx-4 sm:mx-[10%]">
+      <ToastContainer/>
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />

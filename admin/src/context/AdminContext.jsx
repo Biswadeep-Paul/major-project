@@ -15,42 +15,100 @@ const AdminContextProvider = (props) => {
     const [doctors, setDoctors] = useState([])
     const [dashData, setDashData] = useState(false)
 
-    // Getting all Doctors data from Database using API
+    // // Getting all Doctors data from Database using API
+    // const getAllDoctors = async () => {
+
+    //     try {
+
+    //         const { data } = await axios.get(backendUrl + '/api/admin/all-doctors', { headers: { aToken } })
+    //         if (data.success) {
+    //             setDoctors(data.doctors)
+    //         } else {
+    //             toast.error(data.message)
+    //         }
+
+    //     } catch (error) {
+    //         toast.error(error.message)
+    //     }
+
+    // }
+
+    // // Function to change doctor availablity using API
+    // const changeAvailability = async (docId) => {
+    //     try {
+
+    //         const { data } = await axios.post(backendUrl + '/api/admin/change-availability', { docId }, { headers: { aToken } })
+    //         if (data.success) {
+    //             toast.success(data.message)
+    //             getAllDoctors()
+    //         } else {
+    //             toast.error(data.message)
+    //         }
+
+    //     } catch (error) {
+    //         console.log(error)
+    //         toast.error(error.message)
+    //     }
+    // }
+// Getting all Doctors data from Database using API
     const getAllDoctors = async () => {
-
         try {
-
-            const { data } = await axios.get(backendUrl + '/api/admin/all-doctors', { headers: { aToken } })
+            const { data } = await axios.get(backendUrl + '/api/admin/all-doctors', { 
+                headers: { aToken },
+                // Add cache busting parameter to prevent cached responses
+                params: { _t: new Date().getTime() }
+            })
+            
             if (data.success) {
                 setDoctors(data.doctors)
             } else {
                 toast.error(data.message)
             }
-
         } catch (error) {
             toast.error(error.message)
         }
-
     }
 
     // Function to change doctor availablity using API
     const changeAvailability = async (docId) => {
         try {
-
-            const { data } = await axios.post(backendUrl + '/api/admin/change-availability', { docId }, { headers: { aToken } })
+            // Optimistically update the UI first for better user experience
+            setDoctors(prevDoctors => 
+                prevDoctors.map(doc => 
+                    doc._id === docId ? { ...doc, available: !doc.available } : doc
+                )
+            );
+            
+            const { data } = await axios.post(
+                backendUrl + '/api/admin/change-availability', 
+                { docId }, 
+                { headers: { aToken } }
+            )
+            
             if (data.success) {
                 toast.success(data.message)
-                getAllDoctors()
+                // Refresh doctor list after a small delay to ensure backend has updated
+                setTimeout(() => getAllDoctors(), 300)
             } else {
                 toast.error(data.message)
+                // Revert the optimistic update if the API call fails
+                setDoctors(prevDoctors => 
+                    prevDoctors.map(doc => 
+                        doc._id === docId ? { ...doc, available: !doc.available } : doc
+                    )
+                );
             }
-
         } catch (error) {
             console.log(error)
             toast.error(error.message)
+            // Revert the optimistic update if the API call fails
+            setDoctors(prevDoctors => 
+                prevDoctors.map(doc => 
+                    doc._id === docId ? { ...doc, available: !doc.available } : doc
+                )
+            );
         }
     }
-
 
     // Getting all appointment data from Database using API
     const getAllAppointments = async () => {
