@@ -1,11 +1,10 @@
 import React from 'react';
-//import MedicalChatbot from './components/MedicalChatbot';
-import M from './components/M';
+import MedicalChatbot from './components/MedicalChatbot';
+
 function App() {
   return (
     <div className="min-h-screen bg-gray-100">
-      
-      <M/>
+      <MedicalChatbot />
     </div>
   );
 }
