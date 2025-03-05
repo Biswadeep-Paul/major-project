@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import doctorModel from "../models/doctorModel.js";
 import appointmentModel from "../models/appointmentModel.js";
-
+import prescriptionModel from "../models/prescriptionModel.js";
 // API for doctor Login 
 const loginDoctor = async (req, res) => {
 
@@ -189,6 +189,116 @@ const doctorDashboard = async (req, res) => {
         res.json({ success: false, message: error.message })
     }
 }
+// const addPrescription = async (req, res) => {
+//     try {
+//         const { docId, appointmentId, medicines, notes } = req.body;
+
+//         const appointmentData = await appointmentModel.findById(appointmentId);
+//         if (!appointmentData) {
+//             return res.json({ success: false, message: "Appointment not found" });
+//         }
+
+//         if (appointmentData.docId.toString() !== docId) {
+//             return res.json({ success: false, message: "Unauthorized action" });
+//         }
+
+//         const prescription = new prescriptionModel({
+//             appointmentId,
+//             docId,
+//             userId: appointmentData.userId,
+//             medicines,
+//             notes
+//         });
+
+//         await prescription.save();
+
+//         res.json({ success: true, message: "Prescription added successfully", prescription });
+//     } catch (error) {
+//         console.error(error);
+//         res.json({ success: false, message: error.message });
+//     }
+// };
+const addPrescription = async (req, res) => {
+    try {
+        const { docId, appointmentId, medicines, notes } = req.body;
+
+        const appointmentData = await appointmentModel.findById(appointmentId);
+        if (!appointmentData) {
+            return res.status(404).json({ success: false, message: "Appointment not found" });
+        }
+
+        if (appointmentData.docId.toString() !== docId) {
+            return res.status(403).json({ success: false, message: "Unauthorized action" });
+        }
+
+        // Ensure that a doctor cannot overwrite an existing prescription for the same appointment
+        const existingPrescription = await prescriptionModel.findOne({ appointmentId, docId });
+        if (existingPrescription) {
+            return res.status(400).json({ success: false, message: "Prescription already exists for this appointment" });
+        }
+
+        const prescription = new prescriptionModel({
+            appointmentId,
+            docId,
+            userId: appointmentData.userId,
+            medicines,
+            notes
+        });
+
+        await prescription.save();
+        res.json({ success: true, message: "Prescription added successfully", prescription });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+// API to get prescription for a patient
+// const getPrescription = async (req, res) => {
+//     try {
+//         const { userId } = req.body;
+//         const prescriptions = await prescriptionModel.find({ userId }).populate("docId", "name speciality");
+
+//         res.json({ success: true, prescriptions });
+//     } catch (error) {
+//         console.error(error);
+//         res.json({ success: false, message: error.message });
+//     }
+// };
+const getPrescription = async (req, res) => {
+    try {
+        const { userId } = req.user; // Extract patient ID from token
+
+        if (!userId) {
+            return res.status(400).json({ success: false, message: "User ID is required" });
+        }
+
+        const prescriptions = await prescriptionModel
+            .find({ userId })
+            .populate("docId", "name speciality") // Fetch doctor details
+            .sort({ createdAt: -1 }); // Latest prescriptions first
+
+        res.json({ success: true, prescriptions });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+// API to get prescription for a doctor based on appointments
+const getDoctorPrescriptions = async (req, res) => {
+    try {
+        const { docId } = req.body;
+        const prescriptions = await prescriptionModel.find({ docId }).populate("userId", "name email");
+
+        res.json({ success: true, prescriptions });
+    } catch (error) {
+        console.error(error);
+        res.json({ success: false, message: error.message });
+    }
+};
+
+
 
 export {
     loginDoctor,
@@ -199,5 +309,6 @@ export {
     appointmentComplete,
     doctorDashboard,
     doctorProfile,
-    updateDoctorProfile
+    updateDoctorProfile,
+    addPrescription, getPrescription, getDoctorPrescriptions
 }

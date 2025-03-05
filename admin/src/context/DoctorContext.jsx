@@ -110,6 +110,42 @@ const DoctorContextProvider = (props) => {
         }
 
     }
+    const addPrescription = async (appointmentId, prescription) => {
+        try {
+            const { data } = await axios.post(backendUrl + '/api/doctor/add-prescription', 
+                { appointmentId, ...prescription }, 
+                { headers: { dToken } }
+            )
+    
+            if (data.success) {
+                toast.success("Prescription added successfully")
+                getAppointments()
+            } else {
+                toast.error(data.message)
+            }
+    
+        } catch (error) {
+            console.log(error)
+            toast.error(error.message)
+        }
+    }
+    const getPrescriptions = async (appointmentId) => {
+        try {
+            const { data } = await axios.get(`${backendUrl}/api/doctor/prescriptions?appointmentId=${appointmentId}`, { headers: { dToken } });
+    
+            if (data.success) {
+                return data.prescriptions; // Return prescriptions for use in UI
+            } else {
+                toast.error(data.message);
+                return [];
+            }
+        } catch (error) {
+            console.error(error);
+            toast.error("Error fetching prescriptions");
+            return [];
+        }
+    };
+    
 
     const value = {
         dToken, setDToken, backendUrl,
@@ -120,6 +156,9 @@ const DoctorContextProvider = (props) => {
         dashData, getDashData,
         profileData, setProfileData,
         getProfileData,
+        addPrescription,
+        getPrescriptions
+
     }
 
     return (
