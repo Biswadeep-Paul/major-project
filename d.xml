@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxGraphModel dx="887" dy="465" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+  <root>
+    <mxCell id="0" />
+    <mxCell id="1" parent="0" />
+    
+    <!-- User Class -->
+    <mxCell id="user" value="User" style="swimlane" vertex="1" parent="1">
+      <mxGeometry x="50" y="50" width="160" height="140" as="geometry" />
+    </mxCell>
+    <mxCell id="user_attributes" value="&lt;ul&gt;&lt;li&gt;name: String&lt;/li&gt;&lt;li&gt;email: String&lt;/li&gt;&lt;li&gt;image: String&lt;/li&gt;&lt;/ul&gt;" style="text" vertex="1" parent="user">
+      <mxGeometry y="40" width="160" height="100" as="geometry" />
+    </mxCell>
+    
+    <!-- Doctor Class -->
+    <mxCell id="doctor" value="Doctor" style="swimlane" vertex="1" parent="1">
+      <mxGeometry x="250" y="50" width="200" height="240" as="geometry" />
+    </mxCell>
+    <mxCell id="doctor_attributes" value="&lt;ul&gt;&lt;li&gt;name: String&lt;/li&gt;&lt;li&gt;email: String&lt;/li&gt;&lt;li&gt;password: String&lt;/li&gt;&lt;li&gt;speciality: String&lt;/li&gt;&lt;li&gt;experience: String&lt;/li&gt;&lt;li&gt;fees: Number&lt;/li&gt;&lt;/ul&gt;" style="text" vertex="1" parent="doctor">
+      <mxGeometry y="40" width="200" height="200" as="geometry" />
+    </mxCell>
+    
+    <!-- Appointment Class -->
+    <mxCell id="appointment" value="Appointment" style="swimlane" vertex="1" parent="1">
+      <mxGeometry x="500" y="50" width="200" height="220" as="geometry" />
+    </mxCell>
+    <mxCell id="appointment_attributes" value="&lt;ul&gt;&lt;li&gt;userId: String&lt;/li&gt;&lt;li&gt;docId: String&lt;/li&gt;&lt;li&gt;slotDate: String&lt;/li&gt;&lt;li&gt;slotTime: String&lt;/li&gt;&lt;li&gt;amount: Number&lt;/li&gt;&lt;li&gt;payment: Boolean&lt;/li&gt;&lt;/ul&gt;" style="text" vertex="1" parent="appointment">
+      <mxGeometry y="40" width="200" height="180" as="geometry" />
+    </mxCell>
+    
+    <!-- Prescription Class -->
+    <mxCell id="prescription" value="Prescription" style="swimlane" vertex="1" parent="1">
+      <mxGeometry x="750" y="50" width="180" height="160" as="geometry" />
+    </mxCell>
+    <mxCell id="prescription_attributes" value="&lt;ul&gt;&lt;li&gt;appointmentId: ObjectId&lt;/li&gt;&lt;li&gt;docId: ObjectId&lt;/li&gt;&lt;li&gt;userId: ObjectId&lt;/li&gt;&lt;li&gt;medicines: Array&lt;/li&gt;&lt;li&gt;notes: String&lt;/li&gt;&lt;/ul&gt;" style="text" vertex="1" parent="prescription">
+      <mxGeometry y="40" width="180" height="120" as="geometry" />
+    </mxCell>
+    
+    <!-- Relationships -->
+    <mxCell id="user_to_appointment" edge="1" parent="1" source="user" target="appointment" />
+    <mxCell id="doctor_to_appointment" edge="1" parent="1" source="doctor" target="appointment" />
+    <mxCell id="appointment_to_prescription" edge="1" parent="1" source="appointment" target="prescription" />
+    <mxCell id="doctor_to_prescription" edge="1" parent="1" source="doctor" target="prescription" />
+  </root>
+</mxGraphModel>
