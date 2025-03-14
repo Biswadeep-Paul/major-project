@@ -14,11 +14,26 @@ const DoctorAppointments = () => {
     notes: ''
   });
 
+  const [filterUserId, setFilterUserId] = useState(''); // State for filtering by user ID
+  const [filteredAppointments, setFilteredAppointments] = useState([]); // State to store filtered appointments
+
   useEffect(() => {
     if (dToken) {
       getAppointments();
     }
   }, [dToken]);
+
+  // Update filtered appointments whenever appointments or filterUserId changes
+  useEffect(() => {
+    if (filterUserId) {
+      const filtered = appointments.filter(appointment =>
+        appointment.userData._id.includes(filterUserId)
+      );
+      setFilteredAppointments(filtered);
+    } else {
+      setFilteredAppointments(appointments); // If no filter, show all appointments
+    }
+  }, [appointments, filterUserId]);
 
   // Fetch prescriptions when an appointment is selected
   const handleViewPrescriptions = async (appointmentId) => {
@@ -26,7 +41,7 @@ const DoctorAppointments = () => {
     setSelectedPrescriptions(prescriptions);
   };
 
-  // Handle Input Change
+  // Handle Input Change for prescription form
   const handlePrescriptionChange = (index, field, value) => {
     const updatedMedicines = [...prescription.medicines];
     updatedMedicines[index][field] = value;
@@ -49,6 +64,17 @@ const DoctorAppointments = () => {
     <div className='w-full max-w-6xl m-5'>
       <p className='mb-3 text-lg font-medium'>All Appointments</p>
 
+      {/* Filter Input */}
+      <div className='mb-4'>
+        <input
+          type='text'
+          placeholder='Filter by User ID'
+          value={filterUserId}
+          onChange={(e) => setFilterUserId(e.target.value)}
+          className='border p-2 rounded w-full max-w-xs'
+        />
+      </div>
+
       <div className='bg-white border rounded text-sm max-h-[80vh] overflow-y-scroll'>
         <div className='grid grid-cols-[0.5fr_2fr_1fr_1fr_3fr_1fr_1fr_1fr_1fr] gap-1 py-3 px-6 border-b'>
           <p>#</p>
@@ -60,12 +86,13 @@ const DoctorAppointments = () => {
           <p>Action</p>
           <p>Prescription</p>
         </div>
-        {appointments.map((item, index) => (
+        {filteredAppointments.map((item, index) => (
           <div className='grid grid-cols-[0.5fr_2fr_1fr_1fr_3fr_1fr_1fr_1fr_1fr] gap-1 items-center text-gray-500 py-3 px-6 border-b hover:bg-gray-50' key={index}>
             <p>{index + 1}</p>
             <div className='flex items-center gap-2'>
               <img src={item.userData.image} className='w-8 rounded-full' alt="" />
-              <p>{item.userData.name}</p>
+              <p>{item.userData.name} <br></br>
+              {item.userData._id}</p>
             </div>
             <p className='text-xs border border-primary px-2 rounded-full'>
               {item.payment ? 'Online' : 'CASH'}
@@ -126,6 +153,7 @@ const DoctorAppointments = () => {
             <h2 className='text-lg font-bold'>Previous Prescriptions</h2>
             {selectedPrescriptions.map((presc, index) => (
               <div key={index} className='mb-2 p-2 border rounded'>
+                <p className='text-sm font-semibold'>User ID: {presc.userId?._id || "N/A"}</p>
                 <p className='text-sm font-semibold'>Medicines:</p>
                 {presc.medicines.map((med, i) => (
                   <p key={i} className='text-xs'>{med.name} - {med.dosage} - {med.frequency}</p>
