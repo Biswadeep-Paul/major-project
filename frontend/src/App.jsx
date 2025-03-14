@@ -10,7 +10,7 @@ import MyAppointment from "./pages/MyAppointment";
 import Appointment from "./pages/Appointment";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
-import logo from "./assets/logo.svg"; // Adjust path if needed
+import logo2 from "./assets/athercare_3_logo_imresizer-removebg-preview.png"; // Adjust path if needed
 import MedicalChatbot from './components/MedicalChatbot'
 import { ToastContainer, toast } from 'react-toastify';
 
@@ -27,9 +27,25 @@ const App = () => {
       <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
         <div className="relative flex items-center justify-center w-32 h-32">
           {/* Spinner */}
-          <div className="absolute w-full h-full border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+          <div
+  className="absolute w-full h-full rounded-full animate-spin"
+  style={{
+    background: `conic-gradient(
+      from 0deg,
+      transparent 0deg 0deg, /* Gap at the top */
+      green 90deg 180deg,    /* Green gradient */
+      blue 180deg 270deg,     /* Blue gradient */
+      transparent 300deg 360deg /* Gap at the bottom */
+    )`,
+    mask: `radial-gradient(
+      farthest-side,
+      transparent calc(100% - 4px),
+      #000 calc(100% - 4px)
+    )`, // Creates the border effect
+  }}
+></div>
           {/* Fixed Logo (Fades In & Out) */}
-          <img src={logo} alt="Logo" className="w-20 h-20 animate-pulse" />
+          <img src={logo2} alt="Logo" className="w-20 h-20 animate-pulse" />
         </div>
         <p className="mt-3 text-gray-600 font-medium animate-pulse">Loading...</p>
       </div>
