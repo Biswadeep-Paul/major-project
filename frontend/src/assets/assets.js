@@ -36,6 +36,7 @@ import General_physician from './General_physician.svg'
 import Gynecologist from './Gynecologist.svg'
 import Neurologist from './Neurologist.svg'
 import Pediatricians from './Pediatricians.svg'
+import logo2 from './athercare_3_logo_imresizer-removebg-preview.png'
 
 
 export const assets = {
@@ -43,6 +44,7 @@ export const assets = {
     header_img,
     group_profiles,
     logo,
+    logo2,
     chats_icon,
     verified_icon,
     info_icon,

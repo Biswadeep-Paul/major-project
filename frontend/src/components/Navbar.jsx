@@ -1,106 +1,183 @@
-
-
-import  { useContext, useState } from "react";
-
-// import  { useState } from "react";
-
-
-
-
+import { useContext, useState } from "react";
 import { assets } from "../assets/assets";
 import { NavLink, useNavigate } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
+import { motion, AnimatePresence } from "framer-motion"; // For animations
 
 const Navbar = () => {
     const navigate = useNavigate();
-
-    const {token,setToken,userData} = useContext(AppContext)
-
+    const { token, setToken, userData } = useContext(AppContext);
     const [showMenu, setShowMenu] = useState(false);
-    // const [token, setToken] = useState(true); // for temporary use
 
+    const logout = () => {
+        setToken(false);
+        localStorage.removeItem("token");
+    };
 
-    const logout = ()=>{
-        setToken(false)
-        localStorage.removeItem('token')
-    }
+    // Animation variants for Framer Motion
+    const fadeIn = {
+        hidden: { opacity: 0 },
+        visible: { opacity: 1, transition: { duration: 0.3 } },
+    };
+
+    const slideIn = {
+        hidden: { x: "100%" },
+        visible: { x: 0, transition: { duration: 0.3 } },
+    };
 
     return (
-        <div className="flex items-center justify-between text-sm py-4 mb-5 border-b border-b-gray-400">
+        <div className="flex items-center justify-between text-sm py-4 mb-5 border-b border-b-gray-200">
             {/* Logo */}
-            <img onClick={() => navigate('/')} className="w-44 cursor-pointer" src={assets.logo} alt="Logo" />
+            <motion.img
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5 }}
+                onClick={() => navigate("/")}
+                className="w-20 cursor-pointer"
+                src={assets.logo2}
+                alt="Logo"
+            />
 
             {/* Desktop Menu */}
-            <ul className="hidden md:flex items-start gap-5 font-medium">
-                <NavLink to="/" className="py-1">
-                    HOME
-
-                </NavLink>
-                <NavLink to="/doctors" className="py-1">
-                    ALL DOCTORS
-                </NavLink>
-                <NavLink to="/about" className="py-1">
-                    ABOUT
-                </NavLink>
-                <NavLink to="/contact" className="py-1">
-                    CONTACT
-
-                </NavLink>
-               
-                <NavLink to="http://localhost:5175/" className="py-1">
-                    AI
-
-                </NavLink>
+            <ul className="hidden md:flex items-center gap-8 font-medium">
+                {[
+                    { path: "/", label: "HOME" },
+                    { path: "/doctors", label: "ALL DOCTORS" },
+                    { path: "/about", label: "ABOUT" },
+                    { path: "/contact", label: "CONTACT" },
+                    { path: "http://localhost:5175/", label: "AI" },
+                    { path: "/pres", label: "Prescriptions" }
+                ].map((link, index) => (
+                    <NavLink
+                        key={index}
+                        to={link.path}
+                        className={({ isActive }) =>
+                            `relative py-1 px-2 font-semibold transition-all duration-300 
+                            ${isActive
+                                ? "text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-green-500 after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-full after:h-1 after:bg-gradient-to-r after:from-blue-500 after:to-green-500"
+                                : "text-gray-500 hover:text-blue-400"}`
+                        }
+                    >
+                        {link.label}
+                    </NavLink>
+                ))}
             </ul>
 
             {/* Right-Side Icons */}
             <div className="flex items-center gap-4">
                 {token && userData ? (
-                    <div className="flex items-center gap-2 cursor-pointer group relative">
-                        <img className="w-8 rounded-full" src={userData.image} alt="Profile" />
-                        <img className="w-2.5" src={assets.dropdown_icon} alt="Dropdown" />
+                    <motion.div
+                        whileHover={{ scale: 1.05 }}
+                        className="flex items-center gap-2 cursor-pointer group relative"
+                    >
+                        <img
+                            className="w-8 h-8 rounded-full object-cover"
+                            src={userData.image}
+                            alt="Profile"
+                        />
+                        <img
+                            className="w-2.5"
+                            src={assets.dropdown_icon}
+                            alt="Dropdown"
+                        />
                         {/* Dropdown Menu */}
-                        <div className="absolute top-0 right-0 pt-14 text-base font-medium text-gray-600 z-20 hidden group-hover:block">
-                            <div className="min-w-48 bg-stone-100 rounded flex flex-col gap-4 p-4">
-                                <p onClick={() => navigate('/my-profile')} className="hover:text-black cursor-pointer">My Profile</p>
-                                <p onClick={() => navigate('/my-appointments')} className="hover:text-black cursor-pointer">My Appointment</p>
-                                <p onClick={logout} className="hover:text-black cursor-pointer">Logout</p>
+                        <motion.div
+                            initial="hidden"
+                            animate="visible"
+                            variants={fadeIn}
+                            className="absolute top-0 right-0 pt-14 text-base font-medium text-gray-600 z-20 hidden group-hover:block"
+                        >
+                            <div className="min-w-48 bg-white rounded-lg shadow-lg flex flex-col gap-4 p-4">
+                                <p
+                                    onClick={() => navigate("/my-profile")}
+                                    className="hover:text-black cursor-pointer"
+                                >
+                                    My Profile
+                                </p>
+                                <p
+                                    onClick={() => navigate("/my-appointments")}
+                                    className="hover:text-black cursor-pointer"
+                                >
+                                    My Appointments
+                                </p>
+                                <p
+                                    onClick={logout}
+                                    className="hover:text-black cursor-pointer"
+                                >
+                                    Logout
+                                </p>
                             </div>
-                        </div>
-                    </div>
+                        </motion.div>
+                    </motion.div>
                 ) : (
-                    <button onClick={() => navigate('/login')} className="bg-primary text-white px-8 py-3 rounded-full font-light hidden md:block">
+                    <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => navigate("/login")}
+                        className="bg-gradient-to-r from-blue-500 to-green-500 text-white px-8 py-3 rounded-full font-semibold hidden md:block"
+                    >
                         Create Account
-                    </button>
+                    </motion.button>
                 )}
 
                 {/* Mobile Menu Icon */}
-                <img onClick={() => setShowMenu(true)} className="w-6 md:hidden cursor-pointer" src={assets.menu_icon} alt="Menu" />
+                <motion.img
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={() => setShowMenu(true)}
+                    className="w-6 md:hidden cursor-pointer"
+                    src={assets.menu_icon}
+                    alt="Menu"
+                />
             </div>
 
             {/* --------------------- Mobile Menu -------------------- */}
-            <div className={`fixed top-0 right-0 bottom-0 z-20 bg-white transition-all duration-300 ${showMenu ? 'w-3/4 h-full p-4' : 'w-0 overflow-hidden'}`}>
-                <div className="flex justify-between items-center p-4 border-b">
-                    <img src={assets.logo} alt="Logo" className="w-32" />
-                    <img onClick={() => setShowMenu(false)} src={assets.cross_icon} alt="Close" className="w-6 cursor-pointer" />
-                </div>
+            <AnimatePresence>
+                {showMenu && (
+                    <motion.div
+                        initial="hidden"
+                        animate="visible"
+                        exit="hidden"
+                        variants={slideIn}
+                        className="fixed top-0 right-0 bottom-0 z-20 bg-white w-3/4 h-full p-4 shadow-lg"
+                    >
+                        <div className="flex justify-between items-center p-4 border-b">
+                            <img
+                                src={assets.logo}
+                                alt="Logo"
+                                className="w-32"
+                            />
+                            <motion.img
+                                whileHover={{ scale: 1.1 }}
+                                whileTap={{ scale: 0.9 }}
+                                onClick={() => setShowMenu(false)}
+                                src={assets.cross_icon}
+                                alt="Close"
+                                className="w-6 cursor-pointer"
+                            />
+                        </div>
 
-                {/* Mobile Menu Links */}
-                <ul className="flex flex-col gap-4 mt-5 text-lg font-medium">
-                    <NavLink to="/" onClick={() => setShowMenu(false)} className="hover:text-primary">
-                        Home
-                    </NavLink>
-                    <NavLink to="/doctors" onClick={() => setShowMenu(false)} className="hover:text-primary">
-                        All Doctors
-                    </NavLink>
-                    <NavLink to="/about" onClick={() => setShowMenu(false)} className="hover:text-primary">
-                        About
-                    </NavLink>
-                    <NavLink to="/contact" onClick={() => setShowMenu(false)} className="hover:text-primary">
-                        Contact
-                    </NavLink>
-                </ul>
-            </div>
+                        {/* Mobile Menu Links */}
+                        <ul className="flex flex-col gap-4 mt-5 text-lg font-medium">
+                            {[
+                                { path: "/", label: "Home" },
+                                { path: "/doctors", label: "All Doctors" },
+                                { path: "/about", label: "About" },
+                                { path: "/contact", label: "Contact" },
+                            ].map((link, index) => (
+                                <NavLink
+                                    key={index}
+                                    to={link.path}
+                                    onClick={() => setShowMenu(false)}
+                                    className="hover:text-blue-500"
+                                >
+                                    {link.label}
+                                </NavLink>
+                            ))}
+                        </ul>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };

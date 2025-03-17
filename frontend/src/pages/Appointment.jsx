@@ -1,6 +1,8 @@
 
 import  { useContext, useEffect, useState } from "react";
 
+
+
 import { useNavigate, useParams } from "react-router";
 
 import { AppContext } from "../context/AppContext";
@@ -91,7 +93,7 @@ const Appointment = () => {
             if (data.success) {
                 toast.success(data.message)
                 getDoctorsData()
-                navigate('/appointments')
+                navigate('/my-appointments')
             }else{
                 toast.error(data.message)
             }
