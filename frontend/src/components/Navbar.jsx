@@ -45,8 +45,9 @@ const Navbar = () => {
                     { path: "/doctors", label: "ALL DOCTORS" },
                     { path: "/about", label: "ABOUT" },
                     { path: "/contact", label: "CONTACT" },
-                    { path: "http://localhost:5175/", label: "AI" },
+
                     { path: "/pres", label: "Prescriptions" }
+
                 ].map((link, index) => (
                     <NavLink
                         key={index}
