@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import { DoctorContext } from '../../context/DoctorContext'
 import { assets } from '../../assets/assets'
 import { AppContext } from '../../context/AppContext'
+import MedicalChatbot from '../../components/MedicalChatbot copy'
 
 const DoctorDashboard = () => {
 
@@ -68,6 +69,7 @@ const DoctorDashboard = () => {
                     <img onClick={() => completeAppointment(item._id)} className='w-10 cursor-pointer' src={assets.tick_icon} alt="" />
                   </div>
               }
+              <MedicalChatbot></MedicalChatbot>
             </div>
           ))}
         </div>

@@ -4,6 +4,7 @@ import validator from "validator";
 import userModel from "../models/userModel.js";
 import doctorModel from "../models/doctorModel.js";
 import appointmentModel from "../models/appointmentModel.js";
+import prescriptionModel from "../models/prescriptionModel.js";
 import { v2 as cloudinary } from 'cloudinary'
 // import stripe from "stripe";
 // import razorpay from 'razorpay';
@@ -342,7 +343,28 @@ const listAppointment = async (req, res) => {
 //     }
 
 // }
+// API to get prescriptions for a user
+const getPrescription = async (req, res) => {
+    try {
+        // Get userId from the authenticated user via middleware
+        const { userId } = req.body;
 
+        if (!userId) {
+            return res.status(400).json({ success: false, message: "User ID is required" });
+        }
+
+        const prescriptions = await prescriptionModel
+            .find({ userId })
+            .populate("docId", "name speciality") // Fetch doctor details
+            .sort({ createdAt: -1 }); // Latest prescriptions first
+
+        res.json({ success: true, prescriptions });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
 export {
     loginUser,
     registerUser,
@@ -354,5 +376,6 @@ export {
     // paymentRazorpay,
     // verifyRazorpay,
     // paymentStripe,
-    // verifyStripe
+    // verifyStripe,
+        getPrescription
 }
