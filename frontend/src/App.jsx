@@ -13,6 +13,7 @@ import Footer from "./components/Footer";
 import logo2 from "./assets/athercare_3_logo_imresizer-removebg-preview.png"; // Adjust path if needed
 import MedicalChatbot from './components/MedicalChatbot'
 import { ToastContainer, toast } from 'react-toastify';
+import PrescriptionPage from "./components/PrescriptionPage";
 
 
 const App = () => {
@@ -66,7 +67,8 @@ const App = () => {
         <Route path="/my-profile" element={<MyProfile />} />
         <Route path="/my-appointments" element={<MyAppointment />} />
         
-        <Route path="/appointment/:docId" element={<Appointment />} />
+                <Route path="/appointment/:docId" element={<Appointment />} />
+      <Route path="/pres" element={<PrescriptionPage />} />
       </Routes>
       <Footer />
       <div>

@@ -344,10 +344,10 @@ const listAppointment = async (req, res) => {
 
 // }
 // API to get prescriptions for a user
+// 
 const getPrescription = async (req, res) => {
     try {
-        // Get userId from the authenticated user via middleware
-        const { userId } = req.body;
+        const { userId } = req.body; // Get userId from the authenticated request
 
         if (!userId) {
             return res.status(400).json({ success: false, message: "User ID is required" });
@@ -355,14 +355,27 @@ const getPrescription = async (req, res) => {
 
         const prescriptions = await prescriptionModel
             .find({ userId })
-            .populate("docId", "name speciality") // Fetch doctor details
-            .sort({ createdAt: -1 }); // Latest prescriptions first
+            .populate("docId", "name speciality") // Fetch doctor name & speciality
+            .sort({ createdAt: -1 }) // Sort latest first
+            .lean(); // Convert to plain objects
 
-        res.json({ success: true, prescriptions });
+        // Modify response to fit UI structure
+        const formattedPrescriptions = prescriptions.map(prescription => ({
+            _id: prescription._id,
+            doctor: {
+                name: prescription.docId?.name || "Unknown Doctor",
+                speciality: prescription.docId?.speciality || "General",
+            },
+            medicines: prescription.medicines || [],
+            notes: prescription.notes || "No additional notes",
+            createdAt: prescription.createdAt,
+        }));
+
+        res.json({ success: true, prescriptions: formattedPrescriptions });
 
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ success: false, message: error.message });
+        console.error("Error fetching prescriptions:", error);
+        res.status(500).json({ success: false, message: "An error occurred while fetching prescriptions" });
     }
 };
 export {
