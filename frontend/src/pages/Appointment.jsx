@@ -152,7 +152,7 @@ const Appointment = () => {
                                     key={index} 
                                     onClick={() => setSlotIndex(index)} 
                                     className={`text-center py-4 px-3 min-w-16 rounded-full cursor-pointer 
-                                        ${slotIndex === index ? 'bg-primary text-white' : 'border border-gray-300'}`}
+                                        ${slotIndex === index ? 'bg-gradient-to-r from-blue-500 to-green-500 text-white' : 'border border-gray-300'}`}
                                 >
                                     <p>{daysOfWeek[slots[0].datetime.getDay()]}</p>
                                     <p>{slots[0].datetime.getDate()}</p>
@@ -168,7 +168,7 @@ const Appointment = () => {
                                         key={index} 
                                         onClick={() => setSlotTime(slot.time)} 
                                         className={`text-sm px-5 py-2 rounded-lg cursor-pointer 
-                                            ${slot.time === slotTime ? 'bg-primary text-white' : 'border border-gray-300'}`}
+                                            ${slot.time === slotTime ? 'bg-gradient-to-r from-blue-500 to-green-500 text-white' : 'border border-gray-300'}`}
                                     >
                                         {slot.time.toLowerCase()}
                                     </p>
@@ -180,7 +180,7 @@ const Appointment = () => {
                     </>
                 )}
 
-                <button onClick={bookAppointment} className="bg-primary text-white text-sm px-6 py-3 rounded-lg mt-6">
+                <button onClick={bookAppointment} className="bg-gradient-to-r from-blue-500 to-green-500 text-white text-sm px-6 py-3 rounded-lg mt-6">
                     Book An Appointment
                 </button>
             </div>
