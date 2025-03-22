@@ -1,4 +1,5 @@
 import express from 'express';
+// import {paymentRazorpay, verifyRazorpay, paymentStripe, verifyStripe} from '../controllers/paymentController.js';
 import { 
     loginUser, 
     registerUser, 
@@ -9,7 +10,6 @@ import {
     cancelAppointment,
     getPrescription  // Import from userController instead
 } from '../controllers/userController.js';
-//import {paymentRazorpay, verifyRazorpay, paymentStripe, verifyStripe}
 import upload from '../middleware/multer.js';
 import authUser from '../middleware/authUser.js';
 const userRouter = express.Router();

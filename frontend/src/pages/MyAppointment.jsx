@@ -2,13 +2,14 @@ import React, { useContext, useEffect, useState } from "react";
 import { AppContext } from "../context/AppContext";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { FaTimesCircle, FaCalendarCheck, FaSpinner } from "react-icons/fa"; // Import icons
-import { motion } from "framer-motion"; // For animations
+import { FaTimesCircle, FaCalendarCheck, FaSpinner, FaCreditCard, FaMoneyBillAlt } from "react-icons/fa"; // Import icons
+import { motion, AnimatePresence } from "framer-motion"; // For animations
 
 const MyAppointment = () => {
   const { backendUrl, token } = useContext(AppContext);
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showPaymentOptions, setShowPaymentOptions] = useState(null); // Track which appointment's payment options are visible
 
   const getUserAppointment = async () => {
     try {
@@ -45,6 +46,38 @@ const MyAppointment = () => {
     }
   };
 
+  const handlePaymentMethodClick = (appointmentId) => {
+    setShowPaymentOptions(showPaymentOptions === appointmentId ? null : appointmentId);
+  };
+
+  const handlePaymentSelection = async (method, appointmentId) => {
+    try {
+      if (method === "online") {
+        toast.info("Online payment selected. Redirecting to payment gateway...");
+        // Add logic for online payment here
+        // Example: Call an API to initiate online payment
+      } else if (method === "cash") {
+        toast.success("Cash payment selected. Payment will be done at the clinic.");
+        // Add logic for cash payment here
+        // Example: Call an API to update the appointment with cash payment
+      }
+
+      // Update the appointment's payment method in the state
+      setAppointments((prevAppointments) =>
+        prevAppointments.map((appointment) =>
+          appointment._id === appointmentId
+            ? { ...appointment, paymentMethod: method }
+            : appointment
+        )
+      );
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to update payment method.");
+    } finally {
+      setShowPaymentOptions(null); // Close the payment options
+    }
+  };
+
   useEffect(() => {
     if (token) {
       getUserAppointment();
@@ -76,9 +109,8 @@ const MyAppointment = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: index * 0.1 }}
-              className={`p-6 rounded-lg shadow-md ${
-                item.cancelled ? "bg-gray-50 opacity-75" : "bg-white"
-              } hover:shadow-lg transition-shadow duration-300`}
+              className={`p-6 rounded-lg shadow-md ${item.cancelled ? "bg-red-100 border border-red-300" : "bg-white"
+                } hover:shadow-lg transition-shadow duration-300`}
             >
               <div className="grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-6">
                 <div className="flex justify-center md:justify-start">
@@ -100,9 +132,45 @@ const MyAppointment = () => {
                 </div>
                 <div className="flex flex-col gap-2 justify-end">
                   {!item.cancelled && (
-                    <button className="text-sm text-white bg-gradient-to-r from-blue-500 to-green-500  hover:bg-primary-dark transition-all duration-300 py-2 px-4 rounded-lg shadow-md">
-                      Pay Online
-                    </button>
+                    <div className="relative">
+                      <button
+                        onClick={() => handlePaymentMethodClick(item._id)}
+                        className="text-sm text-white bg-gradient-to-r from-blue-500 to-green-500 hover:bg-primary-dark transition-all duration-300 py-2 px-20 rounded-lg shadow-md flex items-center gap-2"
+                      >
+                        <FaCreditCard />{" "}
+                        {item.paymentMethod === "online"
+                          ? "Online Payment Selected"
+                          : item.paymentMethod === "cash"
+                          ? "Cash Payment Selected"
+                          : "Payment Method"}
+                      </button>
+                      <AnimatePresence>
+                        {showPaymentOptions === item._id && (
+                          <motion.div
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            transition={{ duration: 0.2 }}
+                            className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-10"
+                          >
+                            <div className="p-2">
+                              <button
+                                onClick={() => handlePaymentSelection("online", item._id)}
+                                className="w-full text-sm text-zinc-700 hover:bg-blue-50 py-2 px-4 rounded-lg flex items-center gap-2"
+                              >
+                                <FaCreditCard /> Online
+                              </button>
+                              <button
+                                onClick={() => handlePaymentSelection("cash", item._id)}
+                                className="w-full text-sm text-zinc-700 hover:bg-green-50 py-2 px-4 rounded-lg flex items-center gap-2"
+                              >
+                                <FaMoneyBillAlt /> Cash
+                              </button>
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
                   )}
                   {!item.cancelled && (
                     <button
@@ -118,6 +186,12 @@ const MyAppointment = () => {
                       Appointment Cancelled
                     </div>
                   )}
+                  {item.cancelled && item.payment &&
+                    <div className="flex items-center justify-center gap-2 py-2 text-sm text-green-600 bg-green-50 rounded-lg">
+                      <FaCalendarCheck className="text-green-600" />
+                      Payment Successful
+                    </div>
+                  }
                 </div>
               </div>
             </motion.div>
