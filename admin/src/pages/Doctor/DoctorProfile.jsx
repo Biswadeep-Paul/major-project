@@ -79,7 +79,7 @@ const DoctorProfile = () => {
                     <p className='text-gray-600 font-medium mt-4'>
                         Appointment fee: <span className='text-gray-800'>{currency} {isEdit ? <input type='number' onChange={(e) => setProfileData(prev => ({ ...prev, fees: e.target.value }))} value={profileData.fees} /> : profileData.fees}</span>
                     </p>
-
+                    <p className="text-gray-600 text-sm">Rating:-{profileData.averageRating}</p>
                     <div className='flex gap-2 py-2'>
                         <p>Address:</p>
                         <p className='text-sm'>

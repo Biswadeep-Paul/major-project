@@ -117,7 +117,47 @@ const changeAvailablity = async (req, res) => {
         res.json({ success: false, message: error.message })
     }
 }
+const addDoctorRating = async (req, res) => {
+    try {
+        const { docId, rating } = req.body;
 
+        if (!rating || rating < 1 || rating > 5) {
+            return res.status(400).json({ success: false, message: "Rating must be between 1 and 5" });
+        }
+
+        const doctor = await doctorModel.findById(docId);
+        if (!doctor) {
+            return res.status(404).json({ success: false, message: "Doctor not found" });
+        }
+
+        // Add rating and update the average
+        doctor.ratings.push(rating);
+        doctor.calculateAverageRating();
+        await doctor.save();
+
+        res.json({ success: true, message: "Rating added successfully", averageRating: doctor.averageRating });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+}
+const getDoctorRatings = async (req, res) => {
+    try {
+        const { docId } = req.params;
+        const doctor = await doctorModel.findById(docId).select("ratings");
+
+        if (!doctor) {
+            return res.status(404).json({ success: false, message: "Doctor not found" });
+        }
+
+        res.json({ success: true, ratings: doctor.ratings });
+        
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
 // API to get doctor profile for  Doctor Panel
 const doctorProfile = async (req, res) => {
     try {
@@ -310,5 +350,7 @@ export {
     doctorDashboard,
     doctorProfile,
     updateDoctorProfile,
-    addPrescription, getPrescription, getDoctorPrescriptions
+    addPrescription, getPrescription, getDoctorPrescriptions,
+    addDoctorRating,
+    getDoctorRatings
 }
