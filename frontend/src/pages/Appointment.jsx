@@ -117,6 +117,7 @@ const Appointment = () => {
                         {docInfo.name}
                         <img className="w-5" src={assets.verified_icon} alt="Verified" />
                     </p>
+                    <p className="text-gray-600 text-sm">Rating:-{docInfo.averageRating}</p>
                     <div className="flex items-center gap-2 text-sm mt-1 text-gray-600">
                         <p>{docInfo.degree} - {docInfo.speciality}</p>
                         <button className="py-0.5 px-2 border text-xs rounded-full">{docInfo.experience}</button>

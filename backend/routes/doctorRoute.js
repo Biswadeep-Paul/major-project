@@ -11,10 +11,13 @@ import {
   updateDoctorProfile,
   addPrescription,
   getDoctorPrescriptions,
-  getPrescription
+  getPrescription,
+ getDoctorRatings,
+ addDoctorRating
   
 } from '../controllers/doctorController.js';
 import authDoctor from '../middleware/authDoctor.js';
+import authUser from '../middleware/authUser.js';
 const doctorRouter = express.Router();
 
 doctorRouter.post("/login", loginDoctor)
@@ -29,4 +32,8 @@ doctorRouter.post("/update-profile", authDoctor, updateDoctorProfile)
 doctorRouter.post("/add-prescription", authDoctor, addPrescription);
 doctorRouter.get("/prescriptions", authDoctor, getDoctorPrescriptions);
 doctorRouter.get("/prescriptions1", authDoctor, getPrescription);
+// New Routes for Ratings
+//doctorRouter.post("/rate", authUser, addDoctorRating); // Users can rate doctors
+doctorRouter.get("/:docId/ratings", getDoctorRatings);
+doctorRouter.post("/rate", authUser, addDoctorRating);
 export default doctorRouter;
