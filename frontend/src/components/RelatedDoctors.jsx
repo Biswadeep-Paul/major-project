@@ -8,6 +8,19 @@ const RelatedDoctors =({speciality,docId})=>{
     const navigate = useNavigate()
     const [relDoc,setRelDoc] = useState([])
 
+
+    const generateStars = (rating) => {
+        const stars = [];
+        const starCount = Math.min(Math.round(rating), 5); // Rating stars (filled)
+        for (let i = 0; i < starCount; i++) {
+            stars.push(<span key={`filled-${i}`} className="text-yellow-500">★</span>);
+        }
+        for (let i = starCount; i < 5; i++) {
+            stars.push(<span key={`blank-${i}`} className="text-gray-300">★</span>); // Blank stars
+        }
+        return stars;
+    };
+
     useEffect(()=>{
         if (doctors.length > 0 && speciality) {
             const doctorData = doctors.filter((doc) => doc.speciality === speciality && doc._id !== docId)
@@ -26,12 +39,18 @@ const RelatedDoctors =({speciality,docId})=>{
                 <div onClick={()=>{navigate(`/appointment/${item._id}`); scrollTo(0,0)}} className="border border-blue-200 rounded-xl overflow-hidden cursor-pointer hover:translate-y-[-10px] transition-all duration-500" key={index}>
                     <img className="bg-blue-50" src={item.image} alt="" />
                     <div className="p-4">
-                        <div className="flex items-center gap-2 text-sm text-center text-green-500">
-                            <p className="w-2 h-2 bg-green-500 rounded-full"></p><p>Available</p>
-                        </div>
+                    <div className={`flex items-center gap-2 text-sm text-center ${item.available ? "text-green-500" : "text-red-500"}`}>
+                                    <p
+                                        className={`w-2 h-2 rounded-full ${item.available ? "bg-green-500 animate-ping" : "bg-red-500"}`}
+                                    ></p>
+                                    <p>{item.available ? "Available" : "Not Available"}</p>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                    {generateStars(item.averageRating)}
+                                </div>
                         <p className="text-gray-900 text-lg font-medium">{item.name}</p>
                         <p className="text-gray-600 text-sm">{item.speciality}</p>
-                        <p className="text-gray-600 text-sm">Rating:-{item.averageRating}</p>
+                        {/* <p className="text-gray-600 text-sm">Rating:-{item.averageRating}</p> */}
                     </div>
                 </div>
             ))}

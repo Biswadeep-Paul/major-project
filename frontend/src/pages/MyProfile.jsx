@@ -144,7 +144,7 @@ const MyProfile = () => {
                 ) : (
                     <button 
                         onClick={() => setIsEdit(true)}
-                        className="bg-gradient-to-r from-blue-500 to-green-500 text-white px-6 py-2 rounded-md font-semibold hover:bg-blue-600 transition-all"
+                        className="bg-primary text-white px-6 py-2 rounded-md font-semibold hover:bg-blue-600 transition-all"
                     >
                         Edit Profile
                     </button>

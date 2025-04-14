@@ -46,7 +46,7 @@ const Navbar = () => {
                     { path: "/about", label: "ABOUT" },
                     { path: "/contact", label: "CONTACT" },
 
-                    { path: "/pres", label: "Prescriptions" }
+                    // { path: "/pres", label: "Prescriptions" }
 
                 ].map((link, index) => (
                     <NavLink
@@ -55,7 +55,7 @@ const Navbar = () => {
                         className={({ isActive }) =>
                             `relative py-1 px-2 font-semibold transition-all duration-300 
                             ${isActive
-                                ? "text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-green-500 after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-full after:h-1 after:bg-gradient-to-r after:from-blue-500 after:to-green-500"
+                                ? "text-transparent bg-clip-text bg-primary after:content-[''] after:w-full after:h-1 after:bg-gradient-to-r after:from-blue-500 after:to-green-500"
                                 : "text-gray-500 hover:text-blue-400"}`
                         }
                     >
@@ -86,7 +86,7 @@ const Navbar = () => {
                             initial="hidden"
                             animate="visible"
                             variants={fadeIn}
-                            className="absolute top-0 right-0 pt-14 text-base font-medium text-gray-600 z-20 hidden group-hover:block"
+                            className="absolute top-0 right-0 left-0 pt-10 text-base font-medium text-gray-600 z-20 hidden group-hover:block"
                         >
                             <div className="min-w-48 bg-white rounded-lg shadow-lg flex flex-col p-4">
                                 <p
@@ -102,6 +102,12 @@ const Navbar = () => {
                                     My Appointments
                                 </p>
                                 <p
+                                    onClick={() => navigate("/pres")}
+                                    className="hover:text-black hover:bg-gray-100 p-2 rounded-lg cursor-pointer"
+                                >
+                                    Prescription
+                                </p>
+                                <p
                                     onClick={logout}
                                     className="hover:text-black hover:bg-gray-100 p-2 rounded-lg cursor-pointer"
                                 >
@@ -115,7 +121,7 @@ const Navbar = () => {
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         onClick={() => navigate("/login")}
-                        className="bg-gradient-to-r from-blue-500 to-green-500 text-white px-8 py-3 rounded-full font-semibold hidden md:block"
+                        className="bg-primary text-white px-8 py-3 rounded-full font-semibold hidden md:block"
                     >
                         Create Account
                     </motion.button>

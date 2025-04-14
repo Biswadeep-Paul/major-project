@@ -6,12 +6,12 @@ export default {
   ],
   theme: {
     extend: {
-      colors:{
-        'primary':'#5f6FFF'
+      backgroundImage: {
+        'primary': 'linear-gradient(to bottom right, #1e3a8a, #6b21a8, #db2777)',
       },
-      gridTemplateColumns:{
-        'auto':'repeat(auto-fill,minmax(200px,1fr))'
-      }
+      gridTemplateColumns: {
+        'auto': 'repeat(auto-fill, minmax(200px, 1fr))',
+      },
     },
   },
   plugins: [],

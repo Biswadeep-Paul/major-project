@@ -110,11 +110,12 @@ const About = () => {
           <motion.div
             key={index}
             variants={fadeInUp}
-            className="border px-8 py-10 flex flex-col gap-4 text-center bg-white rounded-xl shadow-lg hover:shadow-xl hover:bg-gradient-to-r from-green-500 to-blue-500 hover:text-white transition-all duration-300 cursor-pointer"
+            className="group border px-8 py-10 flex flex-col gap-4 text-center bg-white rounded-xl shadow-lg hover:shadow-xl hover:bg-primary hover:text-white transition-all duration-300 cursor-pointer"
           >
-            <h3 className="text-2xl font-semibold">{item.title}</h3>
-            <p className="text-gray-600 hover:text-white">{item.description}</p>
+            <h3 className="text-2xl font-semibold group-hover:text-white">{item.title}</h3>
+            <h4 className="text-gray-600 group-hover:text-white">{item.description}</h4>
           </motion.div>
+
         ))}
       </motion.div>
     </div>

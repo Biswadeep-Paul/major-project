@@ -105,6 +105,18 @@ const Appointment = () => {
         }
     }
 
+    const generateStars = (rating) => {
+        const stars = [];
+        const starCount = Math.min(Math.round(rating), 5); // Rating stars (filled)
+        for (let i = 0; i < starCount; i++) {
+            stars.push(<span key={`filled-${i}`} className="text-yellow-500">★</span>);
+        }
+        for (let i = starCount; i < 5; i++) {
+            stars.push(<span key={`blank-${i}`} className="text-gray-300">★</span>); // Blank stars
+        }
+        return stars;
+    };
+
 
     return docInfo && (
         <div className="p-4 sm:p-8">
@@ -113,11 +125,18 @@ const Appointment = () => {
                 <img className="bg-primary w-full sm:max-w-72 rounded-lg" src={docInfo.image} alt={docInfo.name} />
                 
                 <div className="flex-1">
+                                <div className={`flex items-center gap-2 text-sm text-center ${docInfo.available ? "text-green-500" : "text-red-500"}`}>
+                                    <p
+                                        className={`w-2 h-2 rounded-full ${docInfo.available ? "bg-green-500 animate-ping" : "bg-red-500"}`}
+                                    ></p>
+                                    <p>{docInfo.available ? "Available" : "Not Available"}</p>
+                                </div>
                     <p className="flex items-center gap-2 text-2xl font-semibold text-gray-900">
                         {docInfo.name}
                         <img className="w-5" src={assets.verified_icon} alt="Verified" />
                     </p>
-                    <p className="text-gray-600 text-sm">Rating:-{docInfo.averageRating}</p>
+                    {/* <p className="text-gray-600 text-sm">Rating:-{docInfo.averageRating}</p> */}
+                    <p className="text-gray-600 text-sm">{generateStars(docInfo.averageRating)}</p>
                     <div className="flex items-center gap-2 text-sm mt-1 text-gray-600">
                         <p>{docInfo.degree} - {docInfo.speciality}</p>
                         <button className="py-0.5 px-2 border text-xs rounded-full">{docInfo.experience}</button>
@@ -153,7 +172,7 @@ const Appointment = () => {
                                     key={index} 
                                     onClick={() => setSlotIndex(index)} 
                                     className={`text-center py-4 px-3 min-w-16 rounded-full cursor-pointer 
-                                        ${slotIndex === index ? 'bg-gradient-to-r from-blue-500 to-green-500 text-white' : 'border border-gray-300'}`}
+                                        ${slotIndex === index ? 'bg-primary text-white' : 'border border-gray-300'}`}
                                 >
                                     <p>{daysOfWeek[slots[0].datetime.getDay()]}</p>
                                     <p>{slots[0].datetime.getDate()}</p>
@@ -181,7 +200,7 @@ const Appointment = () => {
                     </>
                 )}
 
-                <button onClick={bookAppointment} className="bg-gradient-to-r from-blue-500 to-green-500 text-white text-sm px-6 py-3 rounded-lg mt-6">
+                <button onClick={bookAppointment} className="bg-primary text-white text-sm px-6 py-3 rounded-lg mt-6">
                     Book An Appointment
                 </button>
             </div>
