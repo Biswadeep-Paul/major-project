@@ -63,20 +63,20 @@ const Contact = () => {
             <strong>Email:</strong> contact@atherCare.com
           </p>
           <h3 className="text-gray-800 text-2xl font-semibold">
-            Careers at Ather Care
+            At Ather Care
           </h3>
           <p className="text-gray-700">
-            Join our team and be a part of something amazing!
+            Your well-being is our top priority. Whether you have a question, need support, or just want to say hello — we're here to listen. Reach out and we'll get back to you as soon as possible. Your journey to better health starts with a simple message
           </p>
 
           {/* Button */}
-          <motion.button
+          <motion.div
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="bg-gradient-to-r from-green-500 to-blue-500 text-white px-6 py-3 rounded-xl text-lg font-semibold shadow-md hover:shadow-lg transition-all"
+            className="bg-primary text-white text-center px-6 py-3 rounded-xl text-lg font-semibold shadow-md hover:shadow-lg transition-all cursor-pointer-none"
           >
-            Explore Jobs
-          </motion.button>
+          Caring for You, Like Family.
+          </motion.div>
         </motion.div>
       </motion.div>
     </div>

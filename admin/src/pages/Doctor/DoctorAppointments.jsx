@@ -82,11 +82,11 @@ const DoctorAppointments = () => {
           <p>Patient</p>
           <p>Patient_id</p>
           <p>Payment</p>
-          <p>Age</p>
           <p>Date & Time</p>
           <p>Fees</p>
           <p>Action</p>
-          <p>Prescription</p>
+          <p>Add Presc.</p>
+          <p>View Presc.</p>
         </div>
         {filteredAppointments.map((item, index) => (
           <div className='grid grid-cols-[0.5fr_2fr_1fr_1fr_3fr_1fr_1fr_1fr_1fr] gap-1 items-center text-gray-500 py-3 px-6 border-b hover:bg-gray-50' key={index}>

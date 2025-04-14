@@ -73,7 +73,7 @@ const MedicalChatbot = () => {
     <>
       {/* Chatbot Toggle Button */}
       <button
-        className="fixed bottom-4 right-4 bg-blue-500 text-white rounded-full w-12 h-12 flex items-center justify-center shadow-lg hover:shadow-xl transition-all"
+        className="fixed bottom-4 right-4 bg-primary text-white rounded-full w-12 h-12 flex items-center justify-center shadow-lg hover:shadow-xl transition-all"
         onClick={() => setIsVisible(!isVisible)}
       >
         💬
@@ -86,7 +86,7 @@ const MedicalChatbot = () => {
         }`}
       >
         {/* Header */}
-        <div className="bg-blue-600 text-white p-3 flex justify-between">
+        <div className="bg-primary text-white p-3 flex justify-between">
           <h2 className="font-bold">Medical Assistant</h2>
           <button onClick={() => setIsVisible(false)}>❌</button>
         </div>

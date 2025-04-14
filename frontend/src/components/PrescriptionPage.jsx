@@ -91,7 +91,7 @@
             <div className="space-y-6" id="prescription-content">
               {prescriptions.map((prescription) => (
                 <div key={prescription._id} className="bg-white shadow rounded-lg overflow-hidden">
-                  <div className="bg-blue-600 px-6 py-4">
+                  <div className="bg-primary px-6 py-4">
                     <div className="flex justify-between items-center">
                       <h2 className="text-xl font-semibold text-white">
                         Dr. {prescription.doctor.name}

@@ -1,131 +1,154 @@
-import React, { useContext, useEffect, useState } from "react";
-import { AppContext } from "../context/AppContext";
-import axios from "axios";
-import { toast } from "react-toastify";
-import { FaTimesCircle, FaCalendarCheck, FaSpinner } from "react-icons/fa"; // Import icons
-import { motion } from "framer-motion"; // For animations
+import React, { useContext, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { AppContext } from '../context/AppContext';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import { assets } from '../assets/assets';
 
-const MyAppointment = () => {
+const MyAppointments = () => {
   const { backendUrl, token } = useContext(AppContext);
-  const [appointments, setAppointments] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
-  const getUserAppointment = async () => {
+  const [appointments, setAppointments] = useState([]);
+  const [payment, setPayment] = useState('');
+  const [ratings, setRatings] = useState({}); // Keep track of ratings for each appointment
+
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+  const slotDateFormat = (slotDate) => {
+    const dateArray = slotDate.split('_');
+    return dateArray[0] + " " + months[Number(dateArray[1])] + " " + dateArray[2];
+  };
+
+  const DayDate = (slotDate) => {
+    const day = slotDate.split('_')[0];
+    return day;
+  };
+
+  const MonthDate = (slotDate) => {
+    const month = slotDate.split('_')[1];
+    return months[month];
+  };
+
+  const getUserAppointments = async () => {
     try {
-      const { data } = await axios.get(backendUrl + "/api/user/appointments", {
-        headers: { token },
-      });
-      if (data.success) {
-        setAppointments(data.appointments.reverse());
-      }
+      const { data } = await axios.get(backendUrl + '/api/user/appointments', { headers: { token } });
+      setAppointments(data.appointments.reverse());
     } catch (error) {
       console.log(error);
-      toast.error(error.response?.data?.message || "Failed to fetch appointments");
-    } finally {
-      setLoading(false);
+      toast.error(error.message);
     }
   };
 
   const cancelAppointment = async (appointmentId) => {
     try {
-      const { data } = await axios.post(
-        backendUrl + "/api/user/cancel-appointment/",
-        { appointmentId },
-        { headers: { token } }
-      );
+      const appointment = appointments.find(item => item._id === appointmentId);
+      const { data } = await axios.post(backendUrl + '/api/user/cancel-appointment', { appointmentId }, { headers: { token } });
       if (data.success) {
-        getUserAppointment();
+        if (appointment.isCompleted) {
+          toast.error("Cannot cancel a completed appointment");
+          return;
+        }
         toast.success(data.message);
+        getUserAppointments();
       } else {
         toast.error(data.message);
       }
     } catch (error) {
       console.log(error);
-      toast.error(error.response?.data?.message || "Failed to cancel appointment");
+      toast.error(error.message);
+    }
+  };
+
+  const handleRating = async (docId, rating) => {
+    console.log(docId);
+    console.log(rating);
+
+    try {
+      const { data } = await axios.post(`${backendUrl}/api/doctor/rate`, { docId, rating }, {
+        headers: { token }
+      });
+
+      if (data.success) {
+        toast.success("Rating submitted successfully!");
+        setRatings((prevRatings) => {
+          const updatedRatings = { ...prevRatings, [docId]: rating };
+          // Save the updated ratings to localStorage
+          localStorage.setItem('ratings', JSON.stringify(updatedRatings));
+          return updatedRatings;
+        });
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to submit rating!");
     }
   };
 
   useEffect(() => {
     if (token) {
-      getUserAppointment();
+      getUserAppointments();
+    }
+
+    // Retrieve ratings from localStorage
+    const storedRatings = JSON.parse(localStorage.getItem('ratings'));
+    if (storedRatings) {
+      setRatings(storedRatings);
     }
   }, [token]);
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <FaSpinner className="animate-spin text-4xl text-primary" />
-      </div>
-    );
-  }
-
   return (
-    <div className="p-4 max-w-4xl mx-auto">
-      <p className="pb-3 mt-12 font-medium text-zinc-700 border-b text-2xl flex items-center gap-2">
-        <FaCalendarCheck className="text-primary" /> My Appointments
-      </p>
-      {appointments.length === 0 ? (
-        <div className="text-center mt-8 text-zinc-500">
-          <p>You have no appointments scheduled.</p>
-        </div>
-      ) : (
-        <div className="mt-6 space-y-4">
-          {appointments.map((item, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: index * 0.1 }}
-              className={`p-6 rounded-lg shadow-md ${
-                item.cancelled ? "bg-gray-50 opacity-75" : "bg-white"
-              } hover:shadow-lg transition-shadow duration-300`}
-            >
-              <div className="grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-6">
-                <div className="flex justify-center md:justify-start">
-                  <img
-                    className="w-24 h-24 rounded-full object-cover border-2 border-primary"
-                    src={item.docData.image}
-                    alt="Doctor"
-                  />
+    <div>
+      <p className='pb-3 mt-12 text-lg font-medium text-gray-600 border-b'>My appointments</p>
+      <div className=''>
+        {appointments.map((item, index) => (
+          <div key={index} className='grid grid-cols-[1fr_1fr_2fr] gap-4 sm:flex sm:gap-6 py-4 border-b bg-gray-50 m-5 p-5 rounded-lg'>
+            <div className='flex flex-col justify-center items-center text-2xl px-10 border-r-4 border-dotted border-red-500 font-bold rounded-full '>
+              <span className='text-5xl'>{DayDate(item.slotDate)}</span>
+              <span>{MonthDate(item.slotDate)}</span>
+            </div>
+            <div>
+              <img className='w-36 bg-[#EAEFFF]' src={item.docData.image} alt="" />
+            </div>
+            <div className='flex-1 text-sm text-[#5E5E5E]' >
+              <p className='text-[#262626] text-base font-semibold'>{item.docData.name}</p>
+              <p>{item.docData.speciality}</p>
+              <p className='text-[#464646] font-medium mt-1'>Address:</p>
+              <p className=''>{item.docData.address.line1}</p>
+              <p className=''>{item.docData.address.line2}</p>
+              <p className=' mt-1'><span className='text-sm text-[#3C3C3C] font-medium'>Date & Time:</span> {slotDateFormat(item.slotDate)} |  {item.slotTime}</p>
+            </div>
+            <div className='flex flex-col gap-2 justify-end text-sm text-center'>
+              {item.isCompleted && (
+                <div className="flex flex-col items-center gap-2">
+                  <p className="text-green-500 font-medium">Completed</p>
+                  <div className="flex items-center gap-1">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <span
+                        key={star}
+                        onClick={() => handleRating(item.docData._id, star)}
+                        className={`cursor-pointer text-2xl ${ratings[item.docData._id] >= star ? 'text-yellow-500' : 'text-gray-300'}`}
+                      >
+                        ★
+                      </span>
+                    ))}
+                  </div>
                 </div>
-                <div className="flex-1 text-sm text-zinc-600">
-                  <p className="text-neutral-800 font-semibold text-lg">{item.docData.name}</p>
-                  <p className="text-primary">{item.docData.speciality}</p>
-                  <p className="text-zinc-700 font-medium mt-2">Address:</p>
-                  <p className="text-xs">{item.docData.address.line1}</p>
-                  <p className="text-xs">{item.docData.address.line2}</p>
-                  <p className="text-sm mt-2">
-                    <span className="text-neutral-700 font-medium">Date & Time:</span> {item.slotDate} | {item.slotTime}
-                  </p>
-                </div>
-                <div className="flex flex-col gap-2 justify-end">
-                  {!item.cancelled && (
-                    <button className="text-sm text-white bg-gradient-to-r from-blue-500 to-green-500  hover:bg-primary-dark transition-all duration-300 py-2 px-4 rounded-lg shadow-md">
-                      Pay Online
-                    </button>
-                  )}
-                  {!item.cancelled && (
-                    <button
-                      onClick={() => cancelAppointment(item._id)}
-                      className="text-sm text-white bg-red-600 hover:bg-red-700 transition-all duration-300 py-2 px-4 rounded-lg shadow-md"
-                    >
-                      Cancel Appointment
-                    </button>
-                  )}
-                  {item.cancelled && (
-                    <div className="flex items-center justify-center gap-2 py-2 text-sm text-red-600 bg-red-50 rounded-lg">
-                      <FaTimesCircle className="text-red-600" />
-                      Appointment Cancelled
-                    </div>
-                  )}
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      )}
+              )}
+              {!item.cancelled && !item.payment && !item.isCompleted && payment !== item._id && <button onClick={() => setPayment(item._id)} className='text-[#696969] sm:min-w-48 py-2 border-2 rounded hover:bg-primary hover:text-white transition-all duration-300'>Pay Online</button>}
+              {!item.cancelled && !item.payment && !item.isCompleted && payment === item._id && <button onClick={() => appointmentStripe(item._id)} className='text-[#696969] sm:min-w-48 py-2 border rounded hover:bg-gray-100 hover:text-white transition-all duration-300 flex items-center justify-center'><img className='max-w-20 max-h-5' src={assets.stripe_logo} alt="" /></button>}
+              {!item.cancelled && !item.payment && !item.isCompleted && payment === item._id && <button onClick={() => appointmentRazorpay(item._id)} className='text-[#696969] sm:min-w-48 py-2 border rounded hover:bg-gray-100 hover:text-white transition-all duration-300 flex items-center justify-center'><img className='max-w-20 max-h-5' src={assets.razorpay_logo} alt="" /></button>}
+              {!item.cancelled && item.payment && !item.isCompleted && <button className='sm:min-w-48 py-2 border rounded text-[#696969]  bg-[#EAEFFF]'>Paid</button>}
+
+              {!item.cancelled && !item.isCompleted && <button onClick={() => cancelAppointment(item._id)} className='text-[#696969] sm:min-w-48 py-2 border-2 rounded hover:bg-red-600 hover:text-white transition-all duration-300'>Cancel appointment</button>}
+              {item.cancelled && !item.isCompleted && <button className='sm:min-w-48 py-2 border border-red-500 rounded text-red-500'>Appointment cancelled</button>}
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
 
-export default MyAppointment;
+export default MyAppointments;

@@ -56,7 +56,7 @@ const MyProfile = () => {
                     :  <img 
                     src={userData.image} 
                     alt="Profile" 
-                    className="w-32 h-32 rounded-full object-cover border-4 border-blue-400 transition-transform duration-300 hover:scale-110 cursor-pointer"
+                    className="w-32 h-32 rounded-full object-cover border-4 border-blue-500 transition-transform duration-300 hover:scale-110 cursor-pointer"
                 />
                 }
                
@@ -144,7 +144,7 @@ const MyProfile = () => {
                 ) : (
                     <button 
                         onClick={() => setIsEdit(true)}
-                        className="bg-blue-500 text-white px-6 py-2 rounded-md font-semibold hover:bg-blue-600 transition-all"
+                        className="bg-primary text-white px-6 py-2 rounded-md font-semibold hover:bg-blue-600 transition-all"
                     >
                         Edit Profile
                     </button>
