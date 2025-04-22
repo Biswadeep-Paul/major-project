@@ -9,8 +9,8 @@ export default {
       gridTemplateColumns:{
         'auto':'repeat(auto-fill, minmax(200px, 1fr))'
       },
-      colors:{
-        'primary':'#5F6FFF'
+      backgroundImage:{
+        'primary':'linear-gradient(to bottom right, #1e3a8a, #6b21a8, #db2777)'
       }
     },
   },
