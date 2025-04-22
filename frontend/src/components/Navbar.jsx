@@ -108,6 +108,12 @@ const Navbar = () => {
                                     Prescription
                                 </p>
                                 <p
+                                    onClick={() => navigate("/healthcard")}
+                                    className="hover:text-black hover:bg-gray-100 p-2 rounded-lg cursor-pointer"
+                                >
+                                    Get Health Card
+                                </p>
+                                <p
                                     onClick={logout}
                                     className="hover:text-black hover:bg-gray-100 p-2 rounded-lg cursor-pointer"
                                 >

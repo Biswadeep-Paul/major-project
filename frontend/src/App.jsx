@@ -14,6 +14,7 @@ import logo2 from "./assets/athercare_3_logo_imresizer-removebg-preview.png"; //
 import MedicalChatbot from './components/MedicalChatbot'
 import { ToastContainer, toast } from 'react-toastify';
 import PrescriptionPage from "./components/PrescriptionPage";
+import HealthCard from "./components/HealthCard";
 
 
 const App = () => {
@@ -34,8 +35,8 @@ const App = () => {
     background: `conic-gradient(
       from 0deg,
       transparent 0deg 0deg, /* Gap at the top */
-      green 90deg 180deg,    /* Green gradient */
-      blue 180deg 270deg,     /* Blue gradient */
+      blue 90deg 180deg,    /* Green gradient */
+      purple 180deg 270deg,     /* Blue gradient */
       transparent 300deg 360deg /* Gap at the bottom */
     )`,
     mask: `radial-gradient(
@@ -66,6 +67,7 @@ const App = () => {
         <Route path="/contact" element={<Contact />} />
         <Route path="/my-profile" element={<MyProfile />} />
         <Route path="/my-appointments" element={<MyAppointment />} />
+        <Route path="/healthcard" element={<HealthCard />} />
         
                 <Route path="/appointment/:docId" element={<Appointment />} />
       <Route path="/pres" element={<PrescriptionPage />} />

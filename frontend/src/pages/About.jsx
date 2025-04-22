@@ -29,9 +29,10 @@ const About = () => {
         viewport={{ once: true }}
         className="text-center text-4xl font-bold text-gray-800 mb-12"
       >
-        <p>
-          ABOUT <span className="text-primary">US</span>
-        </p>
+        <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            About <span className="text-transparent bg-clip-text bg-primary"> Us</span>
+          </h2>
+        
       </motion.div>
 
       {/* About Section */}
@@ -77,9 +78,9 @@ const About = () => {
         viewport={{ once: true }}
         className="text-center text-3xl font-bold text-gray-800 my-16"
       >
-        <p>
-          WHY <span className="text-primary">CHOOSE US?</span>
-        </p>
+        <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            Choose <span className="text-transparent bg-clip-text bg-primary"> Us?</span>
+          </h2>
       </motion.div>
 
       {/* Cards Section */}

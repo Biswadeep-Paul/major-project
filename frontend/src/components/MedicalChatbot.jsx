@@ -81,7 +81,7 @@ const MedicalChatbot = () => {
 
       {/* Chat Window */}
       <div
-        className={`fixed bottom-20 right-4 w-80 bg-white rounded-lg shadow-lg transition-all ${
+        className={`fixed bottom-20 right-4 w-80 bg-white rounded-lg shadow-lg transition-all z-20 ${
           isVisible ? "scale-100 opacity-100" : "scale-95 opacity-0 pointer-events-none"
         }`}
       >

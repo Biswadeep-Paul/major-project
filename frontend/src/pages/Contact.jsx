@@ -29,9 +29,9 @@ const Contact = () => {
         viewport={{ once: true }}
         className="text-center text-4xl font-bold text-gray-800 mb-12"
       >
-        <p>
-          CONTACT <span className="text-primary">US</span>
-        </p>
+        <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            Contact<span className="text-transparent bg-clip-text bg-primary"> Us</span>
+          </h2>
       </motion.div>
 
       {/* Contact Section */}

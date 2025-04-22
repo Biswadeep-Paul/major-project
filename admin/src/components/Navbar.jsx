@@ -25,7 +25,7 @@ const Navbar = () => {
         <img onClick={() => navigate('/')} className='w-20 sm:w-20 cursor-pointer' src={assets.logo2} alt="" />
         <p className='border px-2.5 py-0.5 rounded-full border-gray-500 text-gray-600'>{aToken ? 'Admin' : 'Doctor'}</p>
       </div>
-      <button onClick={() => logout()} className='bg-gradient-to-r from-blue-500 to-green-500 text-white text-sm px-10 py-2 rounded-full'>Logout</button>
+      <button onClick={() => logout()} className='bg-primary text-white text-sm px-10 py-2 rounded-full'>Logout</button>
     </div>
   )
 }
