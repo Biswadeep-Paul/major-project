@@ -20,8 +20,12 @@ const TopDoctors = () => {
 
     return (
         <div className="flex flex-col items-center gap-4 my-16 text-gray-900 md:mx-10">
-            <h1 className="text-3xl font-medium">Top Doctors To Book</h1>
-            <p className="sm:w-1/3 text-center text-sm">Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            Top Doctors <span className="text-transparent bg-clip-text bg-primary"> To Book</span>
+          </h2>
+          <p className="max-w-2xl mx-auto text-lg text-gray-600">
+            Book Best Doctors with top class facility at your FingerTips.
+          </p>
             <div className="w-full grid grid-cols-auto gap-4 pt-5 gap-y-6 px-3 sm:px-6">
                 {doctors.slice(0, 10).map((item, index) => (
                     <div 

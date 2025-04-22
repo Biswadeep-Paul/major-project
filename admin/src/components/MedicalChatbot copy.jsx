@@ -69,7 +69,7 @@
       <>
         {/* Responsive chat toggle button */}
         <button
-          className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 bg-gradient-to-r from-blue-500 to-teal-400 text-white rounded-full w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-300 z-50"
+          className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 bg-primary text-white rounded-full w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-300 z-50"
           onClick={() => setIsVisible(!isVisible)}
           aria-label="Toggle chat"
         >
@@ -97,7 +97,7 @@
           style={{ maxHeight: isVisible ? "90vh" : "0", height: "auto" }}
         >
           {/* Chat header */}
-          <div className="bg-gradient-to-r from-blue-600 to-teal-500 text-white p-3 sm:p-4 flex items-center justify-between">
+          <div className="bg-primary text-white p-3 sm:p-4 flex items-center justify-between">
             <div className="flex items-center">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
