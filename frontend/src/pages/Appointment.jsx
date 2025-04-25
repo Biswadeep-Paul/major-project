@@ -15,6 +15,7 @@ const Appointment = () => {
     const { docId } = useParams();
     const { doctors, currencySymbol,backendUrl, token , getDoctorsData } = useContext(AppContext);
     const daysOfWeek = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+    const Months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
 
     const navigate = useNavigate()
 
@@ -80,7 +81,7 @@ const Appointment = () => {
             const date = docSlots[slotIndex][0].datetime
 
             let day = date.getDate()
-            let month = date.getMonth()+1
+            let month = date.getMonth()
             let year = date.getFullYear()
 
 
@@ -175,7 +176,9 @@ const Appointment = () => {
                                         ${slotIndex === index ? 'bg-primary text-white' : 'border border-gray-300'}`}
                                 >
                                     <p>{daysOfWeek[slots[0].datetime.getDay()]}</p>
-                                    <p>{slots[0].datetime.getDate()}</p>
+                                    <p className="font-bold text-2xl">{slots[0].datetime.getDate()}</p>
+                                    <p>{Months[slots[0].datetime.getMonth()]}</p>
+                                    
                                 </div>
                             ))}
                         </div>
@@ -188,7 +191,7 @@ const Appointment = () => {
                                         key={index} 
                                         onClick={() => setSlotTime(slot.time)} 
                                         className={`text-sm px-5 py-2 rounded-lg cursor-pointer 
-                                            ${slot.time === slotTime ? 'bg-gradient-to-r from-blue-500 to-green-500 text-white' : 'border border-gray-300'}`}
+                                            ${slot.time === slotTime ? 'bg-primary text-white' : 'border border-gray-300'}`}
                                     >
                                         {slot.time.toLowerCase()}
                                     </p>

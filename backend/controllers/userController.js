@@ -105,7 +105,7 @@ const updateProfile = async (req, res) => {
 
     try {
 
-        const { userId, name, phone, address, dob, gender,age,econtact,premedical,allergy } = req.body
+        const { userId, name, phone, address, dob, gender,age,econtact,premedical,allergy,blood } = req.body
         const imageFile = req.file
 
         if (!name || !phone || !dob || !gender||!age||!econtact||!premedical||!allergy||!blood) {
