@@ -38,9 +38,9 @@ const SpecialityMenu = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Animated Header */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          // initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
+          // transition={{ duration: 0.8 }}
           viewport={{ once: true }}
           className="text-center mb-16"
         >
@@ -57,9 +57,9 @@ const SpecialityMenu = () => {
           {specialityData.map((item, index) => (
             <motion.div
               key={index}
-              initial={{ opacity: 0, y: 50 }}
+              // initial={{ opacity: 0, y: 50 }} // off this part if required
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.05 }}
+              // transition={{ duration: 0.5, delay: index * 0.05 }}
               viewport={{ once: true, margin: "-50px" }}
               onHoverStart={() => setHoveredCard(index)}
               onHoverEnd={() => setHoveredCard(null)}

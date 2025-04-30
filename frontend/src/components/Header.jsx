@@ -73,7 +73,7 @@ const Header = () => {
             className="relative overflow-hidden bg-primary rounded-3xl mx-4 md:mx-10 lg:mx-20 my-10 shadow-2xl"
         >
             {/* Animated background elements */}
-            <div className="absolute inset-0 overflow-hidden">
+            {/* <div className="absolute inset-0 overflow-hidden">
                 {[...Array(10)].map((_, i) => (
                     <motion.div
                         key={i}
@@ -97,7 +97,7 @@ const Header = () => {
                         }}
                     />
                 ))}
-            </div>
+            </div> */}
 
             <div className="relative flex flex-col md:flex-row items-center z-10 px-6 md:px-12 lg:px-24 py-12 md:py-0">
                 {/* Left side content */}
@@ -190,13 +190,15 @@ const Header = () => {
                     >
                         <div className="flex items-center gap-2">
                             <div className="bg-green-100 p-2 rounded-full">
-                                <img className="w-6" src={assets.verified_icon} alt="Verified" />
+                                <img className="w-6 animate-" src={assets.verified_icon} alt="Verified" />
                             </div>
                             <div>
                                 <p className="font-bold text-gray-800">24/7 Available</p>
                                 <p className="text-xs text-gray-500">Instant connection</p>
                             </div>
                         </div>
+
+                        
                     </motion.div>
 
                     <motion.div
