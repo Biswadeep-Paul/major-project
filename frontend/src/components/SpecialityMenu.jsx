@@ -57,7 +57,7 @@ const SpecialityMenu = () => {
           {specialityData.map((item, index) => (
             <motion.div
               key={index}
-              initial={{ opacity: 0, y: 50 }} // off this part if required
+              // initial={{ opacity: 0, y: 50 }} // off this part if required
               whileInView={{ opacity: 1, y: 0 }}
               // transition={{ duration: 0.5, delay: index * 0.05 }}
               viewport={{ once: true, margin: "-50px" }}

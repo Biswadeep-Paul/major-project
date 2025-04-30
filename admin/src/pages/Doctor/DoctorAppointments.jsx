@@ -2,7 +2,10 @@ import React, { useContext, useEffect, useState } from 'react';
 import { DoctorContext } from '../../context/DoctorContext';
 import { AppContext } from '../../context/AppContext';
 import { assets } from '../../assets/assets';
-import MedicalChatbot from '../../components/MedicalChatbot copy'
+// import MedicalChatbot from '../../components/MedicalChatbot copy';
+import pdfMake from 'pdfmake/build/pdfmake';
+import pdfFonts from 'pdfmake/build/vfs_fonts';
+//pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 const DoctorAppointments = () => {
   const { dToken, appointments, getAppointments, cancelAppointment, completeAppointment, addPrescription, getPrescriptions } = useContext(DoctorContext);
@@ -17,7 +20,39 @@ const DoctorAppointments = () => {
 
   const [filterUserId, setFilterUserId] = useState(''); // State for filtering by user ID
   const [filteredAppointments, setFilteredAppointments] = useState([]); // State to store filtered appointments
-
+  const generateAppointmentsReport = () => {
+    const docDefinition = {
+      content: [
+        { text: 'Doctor Appointments Report', style: 'header' },
+        {
+          table: {
+            headerRows: 1,
+            widths: ['auto', '*', '*', '*', '*', '*'],
+            body: [
+              ['#', 'Patient Name', 'Patient ID', 'Payment', 'Age', 'Fees'],
+              ...filteredAppointments.map((item, index) => [
+                index + 1,
+                item.userData.name,
+                item.userData._id,
+                item.payment ? 'Online' : 'Cash',
+                calculateAge(item.userData.age),
+                `${currency}${item.amount}`,
+              ]),
+            ],
+          },
+        },
+      ],
+      styles: {
+        header: {
+          fontSize: 18,
+          bold: true,
+          margin: [0, 0, 0, 10],
+        },
+      },
+    };
+  
+    pdfMake.createPdf(docDefinition).download('appointments-report.pdf');
+  };
   useEffect(() => {
     if (dToken) {
       getAppointments();
@@ -119,6 +154,12 @@ const DoctorAppointments = () => {
                 >
                   📜 View Prescriptions
                 </button>
+                <button
+  onClick={generateAppointmentsReport}
+  className="bg-green-600 text-white px-4 py-2 rounded mb-4 hover:bg-green-700"
+>
+  📄 Download Appointments Report
+</button>
               </>
             ) : (
               <div className='flex'>
@@ -187,8 +228,7 @@ const DoctorAppointments = () => {
     </div>
   </div>
 )}
- <MedicalChatbot></MedicalChatbot>
-    </div>
+     </div>
   );
 };
 

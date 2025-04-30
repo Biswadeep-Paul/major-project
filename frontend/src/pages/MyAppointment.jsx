@@ -121,9 +121,9 @@ const MyAppointments = () => {
             </div>
             <div className='flex flex-col gap-2 justify-end text-sm text-center'>
               {item.isCompleted && (
-                <div className="flex flex-col items-center gap-2">
+                <div className="flex flex-col items-center gap-2 border-2 border-green-500 p-2 px-14 rounded-md">
                   <p className="text-green-500 font-medium">Completed</p>
-                  <div className="flex items-center gap-1">
+                  {/* <div className="flex items-center gap-1">
                     {[1, 2, 3, 4, 5].map((star) => (
                       <span
                         key={star}
@@ -133,7 +133,7 @@ const MyAppointments = () => {
                         ★
                       </span>
                     ))}
-                  </div>
+                  </div> */}
                 </div>
               )}
               {!item.cancelled && !item.payment && !item.isCompleted && payment !== item._id && <button onClick={() => setPayment(item._id)} className='text-[#696969] sm:min-w-48 py-2 border-2 rounded hover:bg-primary hover:text-white transition-all duration-300'>Pay Online</button>}
@@ -142,7 +142,7 @@ const MyAppointments = () => {
               {!item.cancelled && item.payment && !item.isCompleted && <button className='sm:min-w-48 py-2 border rounded text-[#696969]  bg-[#EAEFFF]'>Paid</button>}
 
               {!item.cancelled && !item.isCompleted && <button onClick={() => cancelAppointment(item._id)} className='text-[#696969] sm:min-w-48 py-2 border-2 rounded hover:bg-red-600 hover:text-white transition-all duration-300'>Cancel appointment</button>}
-              {item.cancelled && !item.isCompleted && <button className='sm:min-w-48 py-2 border border-red-500 rounded text-red-500'>Appointment cancelled</button>}
+              {item.cancelled && !item.isCompleted && <button className='sm:min-w-48 py-2 border-2 border-red-500 rounded text-red-500'>Appointment cancelled</button>}
             </div>
           </div>
         ))}

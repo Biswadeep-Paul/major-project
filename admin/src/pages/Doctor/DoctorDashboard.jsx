@@ -1,29 +1,63 @@
-import React from 'react'
-import { useContext } from 'react'
-import { useEffect } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { DoctorContext } from '../../context/DoctorContext'
 import { assets } from '../../assets/assets'
 import { AppContext } from '../../context/AppContext'
-import MedicalChatbot from '../../components/MedicalChatbot copy'
+import { Bar } from 'react-chartjs-2'
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js'
+
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const DoctorDashboard = () => {
 
   const { dToken, dashData, getDashData, cancelAppointment, completeAppointment } = useContext(DoctorContext)
   const { slotDateFormat, currency } = useContext(AppContext)
-
-
+  const chartData = {
+    labels: ['Earnings', 'Appointments', 'Patients'],
+    datasets: [
+      {
+        label: 'Earnings',
+        data: [dashData?.earnings ?? 0, 0],
+        backgroundColor: '#4CAF50',
+        borderColor: '#388E3C',
+        borderWidth: 1,
+      },
+      {
+        label: 'Appointments',
+        data: [0, dashData?.appointments ?? 0],
+        backgroundColor: '#FF9800',
+        borderColor: '#F57C00',
+        borderWidth: 1,
+      },
+      {
+        label: 'Patients',
+        data: [0, dashData?.patients ?? 0],
+        backgroundColor: '#03A9F4',  // Changed color
+        borderColor: '#0288D1',      // Changed border color
+        borderWidth: 1,
+      }
+    ]
+  };
+  const chartOptions = {
+    responsive: true,
+    scales: {
+      y: {
+        min: 0,
+    max: 100,
+        beginAtZero: true,
+      },
+    },
+  };
+  
   useEffect(() => {
-
     if (dToken) {
       getDashData()
     }
-
   }, [dToken])
 
   return dashData && (
     <div className='m-5'>
-
       <div className='flex flex-wrap gap-3'>
+        {/* Existing components */}
         <div className='flex items-center gap-2 bg-white p-4 min-w-52 rounded border-2 border-gray-100 cursor-pointer hover:scale-105 transition-all'>
           <img className='w-14' src={assets.earning_icon} alt="" />
           <div>
@@ -42,16 +76,23 @@ const DoctorDashboard = () => {
           <img className='w-14' src={assets.patients_icon} alt="" />
           <div>
             <p className='text-xl font-semibold text-gray-600'>{dashData.patients}</p>
-            <p className='text-gray-400'>Patients</p></div>
+            <p className='text-gray-400'>Patients</p>
+          </div>
         </div>
       </div>
 
+      {/* Chart Component */}
+      <div className="bg-white mt-6 p-6 rounded border-2">
+        <p className="font-semibold text-lg">Earnings & Appointments</p>
+        <Bar data={chartData} options={chartOptions} />
+      </div>
+
+      {/* Latest Bookings Section */}
       <div className='bg-white'>
         <div className='flex items-center gap-2.5 px-4 py-4 mt-10 rounded-t border'>
           <img src={assets.list_icon} alt="" />
           <p className='font-semibold'>Latest Bookings</p>
         </div>
-
         <div className='pt-4 border border-t-0'>
           {dashData.latestAppointments.slice(0, 5).map((item, index) => (
             <div className='flex items-center px-6 py-3 gap-3 hover:bg-gray-100' key={index}>
@@ -69,7 +110,6 @@ const DoctorDashboard = () => {
                     <img onClick={() => completeAppointment(item._id)} className='w-10 cursor-pointer' src={assets.tick_icon} alt="" />
                   </div>
               }
-              <MedicalChatbot></MedicalChatbot>
             </div>
           ))}
         </div>
