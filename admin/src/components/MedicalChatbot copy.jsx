@@ -1,5 +1,5 @@
   import { useState, useRef, useEffect } from "react";
-  import { GoogleGenerativeAI } from "@google/generative-ai";
+  // import { GoogleGenerativeAI } from "@google/generative-ai";
 
   const MedicalChatbot = () => {
     const [isVisible, setIsVisible] = useState(false);

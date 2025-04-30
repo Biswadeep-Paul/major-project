@@ -1,8 +1,9 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-import doctorModel from "../models/doctorModel.js";
+import doctorModel from "../models/doctormodel.js";
 import appointmentModel from "../models/appointmentModel.js";
 import prescriptionModel from "../models/prescriptionModel.js";
+import Rating from "../models/ratingModel.js";
 // API for doctor Login 
 const loginDoctor = async (req, res) => {
 
@@ -119,45 +120,66 @@ const changeAvailablity = async (req, res) => {
 }
 const addDoctorRating = async (req, res) => {
     try {
-        const { docId, rating } = req.body;
+        const { userId, doctorId, rating, review } = req.body;
 
-        if (!rating || rating < 1 || rating > 5) {
-            return res.status(400).json({ success: false, message: "Rating must be between 1 and 5" });
+        if (!userId || !doctorId || !rating) {
+            return res.status(400).json({ success: false, message: 'Missing required fields' });
         }
 
-        const doctor = await doctorModel.findById(docId);
-        if (!doctor) {
-            return res.status(404).json({ success: false, message: "Doctor not found" });
+        // Validating rating
+        if (rating < 1 || rating > 5) {
+            return res.status(400).json({ success: false, message: 'Rating must be between 1 and 5' });
         }
 
-        // Add rating and update the average
-        doctor.ratings.push(rating);
-        doctor.calculateAverageRating();
-        await doctor.save();
+        // Create a new rating
+        const newRating = new Rating({
+            userId,
+            doctorId,
+            rating,
+            review
+        });
 
-        res.json({ success: true, message: "Rating added successfully", averageRating: doctor.averageRating });
+        await newRating.save();
 
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ success: false, message: error.message });
-    }
-}
-const getDoctorRatings = async (req, res) => {
-    try {
-        const { docId } = req.params;
-        const doctor = await doctorModel.findById(docId).select("ratings");
+        // Optionally, update the doctor's average rating here:
+        const ratings = await Rating.find({ doctorId });
+        const avgRating = ratings.reduce((acc, curr) => acc + curr.rating, 0) / ratings.length;
 
-        if (!doctor) {
-            return res.status(404).json({ success: false, message: "Doctor not found" });
-        }
+        // Update the doctor's overall rating
+        await doctorModel.findByIdAndUpdate(doctorId, { rating: avgRating });
 
-        res.json({ success: true, ratings: doctor.ratings });
-        
+        res.json({ success: true, message: 'Rating added successfully' });
+
     } catch (error) {
         console.error(error);
         res.status(500).json({ success: false, message: error.message });
     }
 };
+
+const getDoctorRatings = async (req, res) => {
+    try {
+        const { docId } = req.params; // <-- get doctor id from URL params
+
+        if (!docId) {
+            return res.status(400).json({ success: false, message: 'Doctor ID is required' });
+        }
+
+        const ratings = await Rating.find({ doctorId: docId }).populate('userId', 'name email');
+
+        // Calculate average rating
+        const avgRating = ratings.length > 0
+            ? ratings.reduce((acc, curr) => acc + curr.rating, 0) / ratings.length
+            : 0;
+
+        res.json({ success: true, ratings, avgRating });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+
 // API to get doctor profile for  Doctor Panel
 const doctorProfile = async (req, res) => {
     try {
