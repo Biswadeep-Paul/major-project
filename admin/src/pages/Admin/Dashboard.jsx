@@ -2,6 +2,20 @@ import React, { useContext, useEffect } from 'react'
 import { assets } from '../../assets/assets'
 import { AdminContext } from '../../context/AdminContext'
 import { AppContext } from '../../context/AppContext'
+import { Bar } from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
+
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+ChartJS.register(ChartDataLabels);
 
 const Dashboard = () => {
 
@@ -13,6 +27,43 @@ const Dashboard = () => {
       getDashData()
     }
   }, [aToken])
+
+  const barChartData = {
+    labels: ['Doctors', 'Appointments', 'Patients'],
+    datasets: [
+      {
+        data: [
+          dashData?.doctors ?? 0,
+          dashData?.appointments ?? 0,
+          dashData?.patients ?? 0,
+        ],
+        backgroundColor: ['#4CAF50', '#FF9800', '#03A9F4'],
+        borderColor: ['#388E3C', '#F57C00', '#0288D1'],
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  const barChartOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        display: false,
+      },
+      title: {
+        display: true,
+        text: 'Dashboard Overview',
+      },
+      datalabels: {
+        display: true,
+        align: 'top',
+        font: {
+          weight: 'bold',
+        },
+        formatter: (value) => value,
+      },
+    },
+  };
 
   return dashData && (
     <div className='m-5'>
@@ -38,6 +89,10 @@ const Dashboard = () => {
             <p className='text-xl font-semibold text-gray-600'>{dashData.patients}</p>
             <p className='text-gray-400'>Patients</p></div>
         </div>
+      </div>
+
+      <div className='bg-white mt-6 p-6 rounded border-2'>
+        <Bar data={barChartData} options={barChartOptions} />
       </div>
 
       <div className='bg-white'>

@@ -13,7 +13,9 @@ import {
   getDoctorPrescriptions,
   getPrescription,
  getDoctorRatings,
- addDoctorRating
+ addDoctorRating,
+ forgotPassword,
+    resetPassword
   
 } from '../controllers/doctorController.js';
 import authDoctor from '../middleware/authDoctor.js';
@@ -36,4 +38,7 @@ doctorRouter.get("/prescriptions1", authDoctor, getPrescription);
 //doctorRouter.post("/rate", authUser, addDoctorRating); // Users can rate doctors
 doctorRouter.get("/:docId/ratings", getDoctorRatings);
 doctorRouter.post("/rate", authUser, addDoctorRating);
+doctorRouter.post("/forgot-password", forgotPassword);
+doctorRouter.post("/reset-password", resetPassword);
+
 export default doctorRouter;
