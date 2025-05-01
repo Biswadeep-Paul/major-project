@@ -5,6 +5,8 @@ import { assets } from "../assets/assets";
 import RelatedDoctors from "../components/RelatedDoctors";
 import { toast } from "react-toastify";
 import axios from "axios";
+import { Clock, CalendarDays } from "lucide-react";
+
 
 const Appointment = () => {
     const { docId } = useParams();
@@ -246,16 +248,38 @@ const Appointment = () => {
                         </p>
                         <p className="text-sm text-gray-500 mt-1">{docInfo.about}</p>
                     </div>
-                    <div className="mt-4">
-                        <p className="flex items-center gap-1 text-sm font-medium text-gray-900">
-                            TIMING AND DAY
-                            
-                        </p>
-                        <p className="text-sm text-gray-500 mt-1">   { docInfo.preferredDays || ['MON', 'TUE', 'WED', 'THU', 'FRI']}
-       { docInfo.preferredHours?.start || '09:00'}
-         {docInfo.preferredHours?.end || '17:00'}
-        </p>
-                    </div>
+                    
+
+<div className="mt-6">
+  <div className="flex items-center gap-2 text-sm font-semibold text-gray-800 uppercase tracking-wider">
+    <CalendarDays className="w-4 h-4 text-purple-500" />
+    Timing & Availability
+  </div>
+
+  <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between bg-gray-50 border border-gray-200 rounded-lg p-4">
+    {/* Days */}
+    <div className="flex items-center gap-2 flex-wrap">
+      <span className="font-medium text-gray-700">Days:</span>
+      {(Array.isArray(docInfo.preferredDays) ? docInfo.preferredDays : ['MON', 'TUE', 'WED', 'THU', 'FRI']).map((day, index) => (
+        <span
+          key={index}
+          className="bg-purple-100 text-indigo-700 px-2 py-0.5 rounded-full text-xs font-semibold"
+        >
+          {day}
+        </span>
+      ))}
+    </div>
+
+    {/* Time */}
+    <div className="flex items-center gap-2">
+      <Clock className="w-4 h-4 text-purple-500" />
+      <span className="text-sm text-gray-700">
+        {docInfo.preferredHours?.start || "09:00"} - {docInfo.preferredHours?.end || "17:00"}
+      </span>
+    </div>
+  </div>
+</div>
+
                     <p className="text-gray-500 font-medium mt-4">
                         Appointment Fee: <span className="text-gray-600">{currencySymbol}{docInfo.fees}</span>
                     </p>
