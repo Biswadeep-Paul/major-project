@@ -6,7 +6,7 @@ const Doctors = () => {
     const { speciality } = useParams();
     const navigate = useNavigate();
     const [filterDoc, setFilterDoc] = useState([]);
-    const { doctors, ratings } = useContext(AppContext); // Include ratings from context
+    const { doctors, ratings } = useContext(AppContext);
 
     useEffect(() => {
         if (speciality) {
@@ -16,18 +16,26 @@ const Doctors = () => {
         }
     }, [doctors, speciality]);
 
-    // Function to calculate average rating for a doctor
     const getAverageRating = (doctorId) => {
-        if (!ratings || ratings.length === 0) return 0;
-        
+        console.log(`Calculating average rating for doctor: ${doctorId}`);
+        if (!ratings || ratings.length === 0) {
+            console.log("No ratings available.");
+            return 0;
+        }
+
         const doctorRatings = ratings.filter(rating => rating.doctorId === doctorId);
-        if (doctorRatings.length === 0) return 0;
-        
+        console.log("Doctor ratings:", doctorRatings);
+        if (doctorRatings.length === 0) {
+            console.log("No ratings found for this doctor.");
+            return 0;
+        }
+
         const sum = doctorRatings.reduce((total, rating) => total + rating.rating, 0);
-        return sum / doctorRatings.length;
+        const average = sum / doctorRatings.length;
+        console.log("Average rating:", average);
+        return average;
     };
 
-    // Helper function to generate star ratings
     const generateStars = (rating) => {
         const stars = [];
         const starCount = Math.min(Math.round(rating), 5);
@@ -83,6 +91,7 @@ const Doctors = () => {
                         Gastroenterologist
                     </p>
                 </div>
+
                 <div className="flex flex-col gap-4 text-sm text-gray-600">
                     {/* ... existing speciality buttons ... */}
                 </div>
@@ -91,7 +100,7 @@ const Doctors = () => {
                 <div className="w-full grid grid-cols-auto gap-4 gap-y-6">
                     {filterDoc.map((doctor) => {
                         const averageRating = getAverageRating(doctor._id);
-                        
+
                         return (
                             <div
                                 onClick={() => navigate(`/appointment/${doctor._id}`)}
