@@ -20,39 +20,76 @@ const DoctorAppointments = () => {
 
   const [filterUserId, setFilterUserId] = useState(''); // State for filtering by user ID
   const [filteredAppointments, setFilteredAppointments] = useState([]); // State to store filtered appointments
+  // const generateAppointmentsReport = () => {
+  //   const docDefinition = {
+  //     content: [
+  //       { text: 'Doctor Appointments Report', style: 'header' },
+  //       {
+  //         table: {
+  //           headerRows: 1,
+  //           widths: ['auto', '*', '*', '*', '*', '*'],
+  //           body: [
+  //             ['#', 'Patient Name', 'Patient ID', 'Payment', 'Age', 'Fees'],
+  //             ...filteredAppointments.map((item, index) => [
+  //               index + 1,
+  //               item.userData.name,
+  //               item.userData._id,
+  //               item.payment ? 'Online' : 'Cash',
+  //               calculateAge(item.userData.age),
+  //               `${currency}${item.amount}`,
+  //             ]),
+  //           ],
+  //         },
+  //       },
+  //     ],
+  //     styles: {
+  //       header: {
+  //         fontSize: 18,
+  //         bold: true,
+  //         margin: [0, 0, 0, 10],
+  //       },
+  //     },
+  //   };
+  
+  //   pdfMake.createPdf(docDefinition).download('appointments-report.pdf');
+  //};
   const generateAppointmentsReport = () => {
-    const docDefinition = {
-      content: [
-        { text: 'Doctor Appointments Report', style: 'header' },
-        {
-          table: {
-            headerRows: 1,
-            widths: ['auto', '*', '*', '*', '*', '*'],
-            body: [
-              ['#', 'Patient Name', 'Patient ID', 'Payment', 'Age', 'Fees'],
-              ...filteredAppointments.map((item, index) => [
-                index + 1,
-                item.userData.name,
-                item.userData._id,
-                item.payment ? 'Online' : 'Cash',
-                calculateAge(item.userData.age),
-                `${currency}${item.amount}`,
-              ]),
-            ],
-          },
-        },
-      ],
-      styles: {
-        header: {
-          fontSize: 18,
-          bold: true,
-          margin: [0, 0, 0, 10],
+  const docDefinition = {
+    pageSize: 'A4',  // Set page size to A4
+    pageOrientation: 'landscape',  // Set page orientation to landscape
+    pageMargins: [40, 40, 40, 40],  // Add margins to avoid content being too close to edges
+    content: [
+      { text: 'Doctor Appointments Report', style: 'header' },
+      {
+        table: {
+          headerRows: 1,
+          widths: ['auto', '*', '*', '*', '*'],  // Adjust widths as the "Age" column is removed
+          body: [
+            ['#', 'Patient Name', 'Patient ID', 'Payment', 'Fees'],  // Removed "Age" column
+            ...filteredAppointments.map((item, index) => [
+              index + 1,
+              item.userData.name,
+              item.userData._id,
+              item.payment ? 'Online' : 'Cash',
+              `${currency}${item.amount}`,
+            ]),
+          ],
         },
       },
-    };
-  
-    pdfMake.createPdf(docDefinition).download('appointments-report.pdf');
+    ],
+    styles: {
+      header: {
+        fontSize: 18,
+        bold: true,
+        margin: [0, 0, 0, 10],
+      },
+    },
+    scale: 0.75,  // Better scaling for landscape orientation (reduce if needed)
   };
+
+  // Call pdfMake to generate the PDF
+  pdfMake.createPdf(docDefinition).open();
+};
   useEffect(() => {
     if (dToken) {
       getAppointments();
@@ -99,7 +136,12 @@ const DoctorAppointments = () => {
   return (
     <div className='w-full max-w-6xl m-5'>
       <p className='mb-3 text-lg font-medium'>All Appointments</p>
-
+      <button
+  onClick={generateAppointmentsReport}
+  className="bg-green-600 text-white px-4 py-2 rounded mb-4 hover:bg-green-700"
+>
+  📄 Download Appointments Report
+</button>
       {/* Filter Input */}
       <div className='mb-4'>
         <input
@@ -154,12 +196,7 @@ const DoctorAppointments = () => {
                 >
                   📜 View Prescriptions
                 </button>
-                <button
-  onClick={generateAppointmentsReport}
-  className="bg-green-600 text-white px-4 py-2 rounded mb-4 hover:bg-green-700"
->
-  📄 Download Appointments Report
-</button>
+            
               </>
             ) : (
               <div className='flex'>

@@ -1,58 +1,86 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { DoctorContext } from '../../context/DoctorContext'
-import { assets } from '../../assets/assets'
-import { AppContext } from '../../context/AppContext'
-import { Bar } from 'react-chartjs-2'
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js'
+import React, { useContext, useEffect, useState } from 'react';
+import { DoctorContext } from '../../context/DoctorContext';
+import { assets } from '../../assets/assets';
+import { AppContext } from '../../context/AppContext';
+import { Bar } from 'react-chartjs-2';
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+import pdfMake from 'pdfmake/build/pdfmake';
+import pdfFonts from 'pdfmake/build/vfs_fonts';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-const DoctorDashboard = () => {
+//const pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
-  const { dToken, dashData, getDashData, cancelAppointment, completeAppointment } = useContext(DoctorContext)
-  const { slotDateFormat, currency } = useContext(AppContext)
+const DoctorDashboard = () => {
+  const { dToken, dashData, getDashData, cancelAppointment, completeAppointment } = useContext(DoctorContext);
+  const { slotDateFormat, currency } = useContext(AppContext);
   const chartData = {
     labels: ['Earnings', 'Appointments', 'Patients'],
     datasets: [
       {
-        label: 'Earnings',
-        data: [dashData?.earnings ?? 0, 0],
-        backgroundColor: '#4CAF50',
-        borderColor: '#388E3C',
+        label: 'Statistics',
+        data: [
+          dashData?.earnings ?? 0,
+          dashData?.appointments ?? 0,
+          dashData?.patients ?? 0,
+        ],
+        backgroundColor: ['#4CAF50', '#FF9800', '#03A9F4'],
+        borderColor: ['#388E3C', '#F57C00', '#0288D1'],
         borderWidth: 1,
       },
-      {
-        label: 'Appointments',
-        data: [0, dashData?.appointments ?? 0],
-        backgroundColor: '#FF9800',
-        borderColor: '#F57C00',
-        borderWidth: 1,
-      },
-      {
-        label: 'Patients',
-        data: [0, dashData?.patients ?? 0],
-        backgroundColor: '#03A9F4',  // Changed color
-        borderColor: '#0288D1',      // Changed border color
-        borderWidth: 1,
-      }
-    ]
+    ],
   };
   const chartOptions = {
     responsive: true,
     scales: {
       y: {
-        min: 0,
-    max: 100,
-        beginAtZero: true,
+        beginAtZero: false, // always start from 0
+        suggestedMax: Math.max(
+          dashData?.earnings ?? 0,
+          dashData?.appointments ?? 0,
+          dashData?.patients ?? 0
+        ) + 500, // optional buffer
       },
     },
   };
-  
+
+  const generateEarningsReport = () => {
+    const docDefinition = {
+      pageSize: 'A4', // Set page size to A4
+      pageOrientation: 'landscape', // Set page orientation to landscape
+      pageMargins: [40, 40, 40, 40], // Add margins to avoid content being too close to edges
+      content: [
+        { text: 'Doctor Earnings Report', style: 'header' },
+        {
+          table: {
+            headerRows: 1,
+            widths: ['auto', '*'],
+            body: [
+              ['Earnings', `${currency} ${dashData?.earnings ?? 0}`],
+              ['Appointments', `${dashData?.appointments ?? 0}`],
+              ['Patients', `${dashData?.patients ?? 0}`],
+            ],
+          },
+        },
+      ],
+      styles: {
+        header: {
+          fontSize: 18,
+          bold: true,
+          margin: [0, 0, 0, 10],
+        },
+      },
+    };
+
+    // Generate the PDF
+    pdfMake.createPdf(docDefinition).open();
+  };
+
   useEffect(() => {
     if (dToken) {
-      getDashData()
+      getDashData();
     }
-  }, [dToken])
+  }, [dToken]);
 
   return dashData && (
     <div className='m-5'>
@@ -87,6 +115,16 @@ const DoctorDashboard = () => {
         <Bar data={chartData} options={chartOptions} />
       </div>
 
+      {/* Generate Earnings Report Button */}
+      <div className="mt-6">
+        <button
+          onClick={generateEarningsReport}
+          className="bg-blue-500 text-white p-3 rounded hover:bg-blue-600 transition-all"
+        >
+          Generate Earnings Report
+        </button>
+      </div>
+
       {/* Latest Bookings Section */}
       <div className='bg-white'>
         <div className='flex items-center gap-2.5 px-4 py-4 mt-10 rounded-t border'>
@@ -114,9 +152,8 @@ const DoctorDashboard = () => {
           ))}
         </div>
       </div>
-
     </div>
-  )
-}
+  );
+};
 
-export default DoctorDashboard
+export default DoctorDashboard;

@@ -9,8 +9,18 @@ const doctorSchema = new mongoose.Schema({
     degree: { type: String, required: true },
     experience: { type: String, required: true },
     location:{type:String},
-    
-    // ratings: { type: [Number], default: [] }, // Store multiple ratings
+    preferredDays: { 
+        type: [String], 
+        default: ['MON', 'TUE', 'WED', 'THU', 'FRI'],
+        enum: ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
+    },
+    preferredHours: {
+        start: { type: String, default: '09:00' },
+        end: { type: String, default: '17:00' }
+    },
+    resetPasswordToken: String,
+    resetPasswordExpires: Date,
+     ratings: { type: Number ,ref:'Rating'}, // Store multiple ratings
     // averageRating: { type: Number, default: 0 },
     about: { type: String, required: true },
     available: { type: Boolean, default: true },
