@@ -39,41 +39,87 @@ const Appointment = () => {
     }, [docId, getRatingsData]); // Add getRatingsData to dependencies
 
 
+    // const generateAvailableSlots = () => {
+    //     const slots = [];
+    //     const today = new Date();
+
+    //     for (let i = 0; i < 7; i++) {
+    //         const currentDate = new Date();
+    //         currentDate.setDate(today.getDate() + i);
+
+    //         const endTime = new Date();
+    //         endTime.setDate(today.getDate() + i);
+    //         endTime.setHours(21, 0, 0, 0);
+
+    //         if (today.getDate() === currentDate.getDate()) {
+    //             currentDate.setHours(Math.max(10, currentDate.getHours() + 1));
+    //             currentDate.setMinutes(currentDate.getMinutes() > 30 ? 30 : 0);
+    //         } else {
+    //             currentDate.setHours(10);
+    //             currentDate.setMinutes(0);
+    //         }
+
+    //         const timeSlots = [];
+    //         while (currentDate < endTime) {
+    //             timeSlots.push({
+    //                 datetime: new Date(currentDate),
+    //                 time: currentDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    //             });
+    //             currentDate.setMinutes(currentDate.getMinutes() + 30);
+    //         }
+
+    //         if (timeSlots.length > 0) slots.push(timeSlots);
+    //     }
+
+    //     setDocSlots(slots);
+    // };
     const generateAvailableSlots = () => {
         const slots = [];
         const today = new Date();
-
-        for (let i = 0; i < 7; i++) {
-            const currentDate = new Date();
+        
+        // Get doctor's preferences or use defaults
+        const daysPref = docInfo.preferredDays || ['MON', 'TUE', 'WED', 'THU', 'FRI'];
+        const startTime = docInfo.preferredHours?.start || '09:00';
+        const endTime = docInfo.preferredHours?.end || '17:00';
+        
+        // Convert start/end times to hours and minutes
+        const [startHour, startMin] = startTime.split(':').map(Number);
+        const [endHour, endMin] = endTime.split(':').map(Number);
+    
+        for (let i = 0; i < 14; i++) { // Show 2 weeks of availability
+            const currentDate = new Date(today);
             currentDate.setDate(today.getDate() + i);
-
-            const endTime = new Date();
-            endTime.setDate(today.getDate() + i);
-            endTime.setHours(21, 0, 0, 0);
-
-            if (today.getDate() === currentDate.getDate()) {
-                currentDate.setHours(Math.max(10, currentDate.getHours() + 1));
-                currentDate.setMinutes(currentDate.getMinutes() > 30 ? 30 : 0);
-            } else {
-                currentDate.setHours(10);
-                currentDate.setMinutes(0);
-            }
-
+            const dayName = daysOfWeek[currentDate.getDay()];
+            
+            // Only show days the doctor prefers
+            if (!daysPref.includes(dayName)) continue;
+    
             const timeSlots = [];
-            while (currentDate < endTime) {
+            const slotDate = new Date(currentDate);
+            
+            // Set start time
+            slotDate.setHours(startHour, startMin, 0, 0);
+            
+            // Set end time
+            const slotEnd = new Date(currentDate);
+            slotEnd.setHours(endHour, endMin, 0, 0);
+            
+            // Generate time slots
+            while (slotDate < slotEnd) {
                 timeSlots.push({
-                    datetime: new Date(currentDate),
-                    time: currentDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                    datetime: new Date(slotDate),
+                    time: slotDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
                 });
-                currentDate.setMinutes(currentDate.getMinutes() + 30);
+                slotDate.setMinutes(slotDate.getMinutes() + 30);
             }
-
-            if (timeSlots.length > 0) slots.push(timeSlots);
+    
+            if (timeSlots.length > 0) {
+                slots.push(timeSlots);
+            }
         }
-
+    
         setDocSlots(slots);
     };
-
     const bookAppointment = async () => {
         if (!token) {
             toast.warn('Login to Book Appointment');
@@ -189,6 +235,7 @@ const Appointment = () => {
 
                     <div className="flex items-center gap-2 text-sm mt-1 text-gray-600">
                         <p>{docInfo.degree} - {docInfo.speciality}</p>
+                        
                         <button className="py-0.5 px-2 border text-xs rounded-full">{docInfo.experience}</button>
                     </div>
 
@@ -199,7 +246,16 @@ const Appointment = () => {
                         </p>
                         <p className="text-sm text-gray-500 mt-1">{docInfo.about}</p>
                     </div>
-
+                    <div className="mt-4">
+                        <p className="flex items-center gap-1 text-sm font-medium text-gray-900">
+                            TIMING AND DAY
+                            
+                        </p>
+                        <p className="text-sm text-gray-500 mt-1">   { docInfo.preferredDays || ['MON', 'TUE', 'WED', 'THU', 'FRI']}
+       { docInfo.preferredHours?.start || '09:00'}
+         {docInfo.preferredHours?.end || '17:00'}
+        </p>
+                    </div>
                     <p className="text-gray-500 font-medium mt-4">
                         Appointment Fee: <span className="text-gray-600">{currencySymbol}{docInfo.fees}</span>
                     </p>

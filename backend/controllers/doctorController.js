@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import doctorModel from "../models/doctormodel.js";
 import appointmentModel from "../models/appointmentModel.js";
 import prescriptionModel from "../models/prescriptionModel.js";
@@ -31,7 +31,116 @@ const loginDoctor = async (req, res) => {
         res.json({ success: false, message: error.message })
     }
 }
+// Generate and send password reset token
+const forgotPassword = async (req, res) => {
+    try {
+        const { email } = req.body;
+        
+        // Find doctor by email
+        const doctor = await doctorModel.findOne({ email });
+        if (!doctor) {
+            return res.status(404).json({ success: false, message: 'Doctor not found' });
+        }
 
+        // Generate reset token (expires in 1 hour)
+        const resetToken = jwt.sign(
+            { id: doctor._id }, 
+            process.env.JWT_SECRET + doctor.password, 
+            { expiresIn: '1h' }
+        );
+
+        // Save token to database (optional but recommended)
+        await doctorModel.findByIdAndUpdate(doctor._id, { 
+            resetPasswordToken: resetToken,
+            resetPasswordExpires: Date.now() + 3600000 // 1 hour from now
+        });
+
+        // In a real app, you would send an email here with the reset link
+        // For this example, we'll just return the token (in production, never do this)
+        const resetUrl = `${req.headers.origin}/reset-password?token=${resetToken}`;
+        
+        // TODO: Send email with resetUrl in production
+        console.log(`Password reset link: ${resetUrl}`);
+        
+        res.json({ 
+            success: true, 
+            message: 'Password reset link sent to email',
+            token: resetToken // Remove this in production - only for testing
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+// Reset password with token
+const resetPassword = async (req, res) => {
+    try {
+        const { token, newPassword } = req.body;
+        
+        if (!token || !newPassword) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Token and new password are required' 
+            });
+        }
+
+        // Find doctor by token
+        const doctor = await doctorModel.findOne({
+            resetPasswordToken: token,
+            resetPasswordExpires: { $gt: Date.now() }
+        });
+
+        if (!doctor) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Invalid or expired token' 
+            });
+        }
+
+        // Verify token
+        const decoded = jwt.verify(token, process.env.JWT_SECRET + doctor.password);
+        
+        // Hash new password
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+        // Update password and clear reset token
+        await doctorModel.findByIdAndUpdate(doctor._id, {
+            password: hashedPassword,
+            resetPasswordToken: undefined,
+            resetPasswordExpires: undefined
+        });
+
+        res.json({ 
+            success: true, 
+            message: 'Password reset successfully' 
+        });
+
+    } catch (error) {
+        console.error(error);
+        
+        if (error.name === 'TokenExpiredError') {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Token has expired' 
+            });
+        }
+        
+        if (error.name === 'JsonWebTokenError') {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Invalid token' 
+            });
+        }
+        
+        res.status(500).json({ 
+            success: false, 
+            message: error.message 
+        });
+    }
+};
 // API to get doctor appointments for doctor panel
 const appointmentsDoctor = async (req, res) => {
     try {
@@ -196,21 +305,36 @@ const doctorProfile = async (req, res) => {
 }
 
 // API to update doctor profile data from  Doctor Panel
+// const updateDoctorProfile = async (req, res) => {
+//     try {
+
+//         const { docId, fees, address, available } = req.body
+
+//         await doctorModel.findByIdAndUpdate(docId, { fees, address, available })
+
+//         res.json({ success: true, message: 'Profile Updated' })
+
+//     } catch (error) {
+//         console.log(error)
+//         res.json({ success: false, message: error.message })
+//     }
+// }
 const updateDoctorProfile = async (req, res) => {
     try {
-
-        const { docId, fees, address, available } = req.body
-
-        await doctorModel.findByIdAndUpdate(docId, { fees, address, available })
-
-        res.json({ success: true, message: 'Profile Updated' })
-
+        const { docId, fees, address, available, preferredDays, preferredHours } = req.body;
+        await doctorModel.findByIdAndUpdate(docId, { 
+            fees, 
+            address, 
+            available,
+            preferredDays,
+            preferredHours
+        });
+        res.json({ success: true, message: 'Profile Updated' });
     } catch (error) {
-        console.log(error)
-        res.json({ success: false, message: error.message })
+        console.log(error);
+        res.json({ success: false, message: error.message });
     }
 }
-
 // API to get dashboard data for doctor panel
 const doctorDashboard = async (req, res) => {
     try {
@@ -374,5 +498,7 @@ export {
     updateDoctorProfile,
     addPrescription, getPrescription, getDoctorPrescriptions,
     addDoctorRating,
-    getDoctorRatings
+    getDoctorRatings,
+    forgotPassword,
+    resetPassword
 }
