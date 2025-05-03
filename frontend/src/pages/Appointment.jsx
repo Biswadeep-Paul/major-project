@@ -5,6 +5,8 @@ import { assets } from "../assets/assets";
 import RelatedDoctors from "../components/RelatedDoctors";
 import { toast } from "react-toastify";
 import axios from "axios";
+import { Clock, CalendarDays } from "lucide-react";
+
 
 const Appointment = () => {
     const { docId } = useParams();
@@ -238,6 +240,12 @@ const Appointment = () => {
                         
                         <button className="py-0.5 px-2 border text-xs rounded-full">{docInfo.experience}</button>
                     </div>
+                    
+                    
+                    <div className="flex items-center gap-2 text-sm mt-1 text-gray-600">
+                        <p>{docInfo.location}</p>
+                        
+                    </div>
 
                     <div className="mt-4">
                         <p className="flex items-center gap-1 text-sm font-medium text-gray-900">
@@ -246,16 +254,38 @@ const Appointment = () => {
                         </p>
                         <p className="text-sm text-gray-500 mt-1">{docInfo.about}</p>
                     </div>
-                    <div className="mt-4">
-                        <p className="flex items-center gap-1 text-sm font-medium text-gray-900">
-                            TIMING AND DAY
-                            
-                        </p>
-                        <p className="text-sm text-gray-500 mt-1">   { docInfo.preferredDays || ['MON', 'TUE', 'WED', 'THU', 'FRI']}
-       { docInfo.preferredHours?.start || '09:00'}
-         {docInfo.preferredHours?.end || '17:00'}
-        </p>
-                    </div>
+                    
+
+<div className="mt-6">
+  <div className="flex items-center gap-2 text-sm font-semibold text-gray-800 uppercase tracking-wider">
+    <CalendarDays className="w-4 h-4 text-purple-500" />
+    Timing & Availability
+  </div>
+
+  <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between bg-gray-50 border border-gray-200 rounded-lg p-4">
+    {/* Days */}
+    <div className="flex items-center gap-2 flex-wrap">
+      <span className="font-medium text-gray-700">Days:</span>
+      {(Array.isArray(docInfo.preferredDays) ? docInfo.preferredDays : ['MON', 'TUE', 'WED', 'THU', 'FRI']).map((day, index) => (
+        <span
+          key={index}
+          className="bg-purple-100 text-indigo-700 px-2 py-0.5 rounded-full text-xs font-semibold"
+        >
+          {day}
+        </span>
+      ))}
+    </div>
+
+    {/* Time */}
+    <div className="flex items-center gap-2">
+      <Clock className="w-4 h-4 text-purple-500" />
+      <span className="text-sm text-gray-700">
+        {docInfo.preferredHours?.start || "09:00"} - {docInfo.preferredHours?.end || "17:00"}
+      </span>
+    </div>
+  </div>
+</div>
+
                     <p className="text-gray-500 font-medium mt-4">
                         Appointment Fee: <span className="text-gray-600">{currencySymbol}{docInfo.fees}</span>
                     </p>
@@ -290,7 +320,7 @@ const Appointment = () => {
 
                         {/* Time Slots */}
                         {docSlots[slotIndex]?.length > 0 ? (
-                            <div className="flex gap-3 w-full overflow-x-auto mt-4">
+                            <div className="flex gap-3 w-full overflow-x-auto mt-4 pb-5"> {/* Added pb-4 for spacing */}
                                 {docSlots[slotIndex].map((slot, index) => {
                                     const date = slot.datetime;
                                     const slotDate = `${date.getDate()}_${date.getMonth()}_${date.getFullYear()}`;
@@ -299,22 +329,29 @@ const Appointment = () => {
                                     const isSelected = slot.time === slotTime;
 
                                     return (
-                                        <div key={index} className="relative">
-                                            <p
-                                                onClick={() => {
+                                        <div key={index} className="relative flex flex-col items-center">
+                                            <button
+                                                type="button"
+                                                onClick={(e) => {
+                                                    e.preventDefault();
                                                     if (!isBooked) setSlotTime(slot.time);
                                                 }}
-                                                className={`text-sm px-5 py-2 rounded-lg cursor-pointer select-none
-                                                    ${isBooked ? 'bg-gray-300 text-gray-600 cursor-not-allowed' :
-                                                        isSelected ? 'bg-primary text-white' :
-                                                            'border border-gray-300 hover:bg-gray-100'}`}
+                                                className={`text-sm px-5 py-2 rounded-lg cursor-pointer select-none w-full min-w-[90px] transition-colors ${isBooked
+                                                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                                        : isSelected
+                                                            ? 'bg-primary text-white'
+                                                            : 'border border-gray-200 hover:bg-gray-50'
+                                                    }`}
+                                                disabled={isBooked}
                                             >
                                                 {slot.time.toLowerCase()}
-                                            </p>
+                                            </button>
                                             {isBooked && (
-                                                <span className="absolute text-xs text-red-500 font-semibold top-full mt-1 left-1/2 transform -translate-x-1/2">
-                                                    Booked
-                                                </span>
+                                                <div className="absolute -bottom-5 left-0 right-0 flex justify-center">
+                                                    <span className="text-xs text-red-500 font-medium bg-white px-2 py-0.5 rounded-full border border-red-100 shadow-sm">
+                                                        Booked
+                                                    </span>
+                                                </div>
                                             )}
                                         </div>
                                     );
@@ -393,6 +430,7 @@ const Appointment = () => {
                                     </div>
                                 </div>
                                 <p className="text-gray-600 text-sm mt-1">{rating.review}</p>
+                                <p className="text-gray-600 text-sm mt-1">{rating.avgRating}</p>
                             </div>
                         ))}
                     </div>

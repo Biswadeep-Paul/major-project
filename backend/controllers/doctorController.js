@@ -5,30 +5,62 @@ import appointmentModel from "../models/appointmentModel.js";
 import prescriptionModel from "../models/prescriptionModel.js";
 import Rating from "../models/ratingModel.js";
 // API for doctor Login 
+// const loginDoctor = async (req, res) => {
+
+//     try {
+
+//         const { email, password } = req.body
+//         const user = await doctorModel.findOne({ email })
+
+//         if (!user) {
+//             return res.json({ success: false, message: "Invalid credentials" })
+//         }
+
+//         const isMatch = await bcrypt.compare(password, user.password)
+
+//         if (isMatch) {
+//             const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET)
+//             res.json({ success: true, token })
+//         } else {
+//             res.json({ success: false, message: "Invalid credentials" })
+//         }
+
+
+//     } catch (error) {
+//         console.log(error)
+//         res.json({ success: false, message: error.message })
+//     }
+// }
+// API for doctor Login 
 const loginDoctor = async (req, res) => {
-
     try {
-
-        const { email, password } = req.body
-        const user = await doctorModel.findOne({ email })
+        const { email, password } = req.body;
+        const user = await doctorModel.findOne({ email });
 
         if (!user) {
-            return res.json({ success: false, message: "Invalid credentials" })
+            return res.json({ success: false, message: "Invalid credentials" });
         }
 
-        const isMatch = await bcrypt.compare(password, user.password)
+        // Check if doctor account is active
+        if (user.isActive === false) {
+            return res.json({ 
+                success: false, 
+                message: "Your account has been deactivated. Please contact admin." 
+            });
+        }
+
+        const isMatch = await bcrypt.compare(password, user.password);
 
         if (isMatch) {
-            const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET)
-            res.json({ success: true, token })
+            const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+            res.json({ success: true, token });
         } else {
-            res.json({ success: false, message: "Invalid credentials" })
+            res.json({ success: false, message: "Invalid credentials" });
         }
 
-
     } catch (error) {
-        console.log(error)
-        res.json({ success: false, message: error.message })
+        console.log(error);
+        res.json({ success: false, message: error.message });
     }
 }
 // Generate and send password reset token
@@ -321,11 +353,13 @@ const doctorProfile = async (req, res) => {
 // }
 const updateDoctorProfile = async (req, res) => {
     try {
-        const { docId, fees, address, available, preferredDays, preferredHours } = req.body;
+        const { docId, fees, address, available,location,about, preferredDays, preferredHours } = req.body;
         await doctorModel.findByIdAndUpdate(docId, { 
             fees, 
             address, 
             available,
+            location,
+            about,
             preferredDays,
             preferredHours
         });

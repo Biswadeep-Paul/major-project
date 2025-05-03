@@ -6,7 +6,8 @@ const Doctors = () => {
     const { speciality } = useParams();
     const navigate = useNavigate();
     const [filterDoc, setFilterDoc] = useState([]);
-    const { doctors, ratings } = useContext(AppContext); // Include ratings from context
+    const [doctorRatingsMap, setDoctorRatingsMap] = useState({});
+    const { doctors, getRatingsData } = useContext(AppContext);
 
     useEffect(() => {
         if (speciality) {
@@ -16,18 +17,26 @@ const Doctors = () => {
         }
     }, [doctors, speciality]);
 
-    // Function to calculate average rating for a doctor
-    const getAverageRating = (doctorId) => {
-        if (!ratings || ratings.length === 0) return 0;
-        
-        const doctorRatings = ratings.filter(rating => rating.doctorId === doctorId);
-        if (doctorRatings.length === 0) return 0;
-        
-        const sum = doctorRatings.reduce((total, rating) => total + rating.rating, 0);
-        return sum / doctorRatings.length;
-    };
+    useEffect(() => {
+        const fetchAllRatings = async () => {
+            const ratingsObj = {};
+            const docIds = filterDoc.map(doc => doc._id);
 
-    // Helper function to generate star ratings
+            for (const id of docIds) {
+                const res = await getRatingsData(id);
+                if (res?.avgRating !== undefined) {
+                    ratingsObj[id] = res.avgRating;
+                }
+            }
+
+            setDoctorRatingsMap(ratingsObj);
+        };
+
+        if (filterDoc.length > 0) {
+            fetchAllRatings();
+        }
+    }, [filterDoc]);
+
     const generateStars = (rating) => {
         const stars = [];
         const starCount = Math.min(Math.round(rating), 5);
@@ -44,54 +53,24 @@ const Doctors = () => {
         <div>
             <p className="text-gray-600">Browse through the doctors specialist.</p>
             <div className="flex flex-col sm:flex-row items-start gap-5 mt-5">
-                {/* Speciality filter options (unchanged) */}
+                {/* Filters left section */}
                 <div className="flex flex-col gap-4 text-sm text-gray-600">
-                    <p
-                        onClick={() => speciality === 'General physician' ? navigate('/doctors') : navigate('/doctors/General physician')}
-                        className={`w-[94vw] sm:w-auto pl-3 py-1.5 pr-16 border border-gray-300 rounded transition-all cursor-pointer ${speciality === "General physician" ? "bg-indigo-100 text-black" : ""}`}
-                    >
-                        General Physician
-                    </p>
-                    <p
-                        onClick={() => speciality === 'Gynecologist' ? navigate('/doctors') : navigate('/doctors/Gynecologist')}
-                        className={`w-[94vw] sm:w-auto pl-3 py-1.5 pr-16 border border-gray-300 rounded transition-all cursor-pointer ${speciality === "Gynecologist" ? "bg-indigo-100 text-black" : ""}`}
-                    >
-                        Gynecologist
-                    </p>
-                    <p
-                        onClick={() => speciality === 'Dermatologist' ? navigate('/doctors') : navigate('/doctors/Dermatologist')}
-                        className={`w-[94vw] sm:w-auto pl-3 py-1.5 pr-16 border border-gray-300 rounded transition-all cursor-pointer ${speciality === "Dermatologist" ? "bg-indigo-100 text-black" : ""}`}
-                    >
-                        Dermatologist
-                    </p>
-                    <p
-                        onClick={() => speciality === 'Pediatricians' ? navigate('/doctors') : navigate('/doctors/Pediatricians')}
-                        className={`w-[94vw] sm:w-auto pl-3 py-1.5 pr-16 border border-gray-300 rounded transition-all cursor-pointer ${speciality === "Pediatricians" ? "bg-indigo-100 text-black" : ""}`}
-                    >
-                        Pediatricians
-                    </p>
-                    <p
-                        onClick={() => speciality === 'Neurologist' ? navigate('/doctors') : navigate('/doctors/Neurologist')}
-                        className={`w-[94vw] sm:w-auto pl-3 py-1.5 pr-16 border border-gray-300 rounded transition-all cursor-pointer ${speciality === "Neurologist" ? "bg-indigo-100 text-black" : ""}`}
-                    >
-                        Neurologist
-                    </p>
-                    <p
-                        onClick={() => speciality === 'Gastroenterologist' ? navigate('/doctors') : navigate('/doctors/Gastroenterologist')}
-                        className={`w-[94vw] sm:w-auto pl-3 py-1.5 pr-16 border border-gray-300 rounded transition-all cursor-pointer ${speciality === "Gastroenterologist" ? "bg-indigo-100 text-black" : ""}`}
-                    >
-                        Gastroenterologist
-                    </p>
-                </div>
-                <div className="flex flex-col gap-4 text-sm text-gray-600">
-                    {/* ... existing speciality buttons ... */}
+                    {["General physician", "Gynecologist", "Dermatologist", "Pediatricians", "Neurologist", "Gastroenterologist"].map((type) => (
+                        <p
+                            key={type}
+                            onClick={() => speciality === type ? navigate('/doctors') : navigate(`/doctors/${type}`)}
+                            className={`w-[94vw] sm:w-auto pl-3 py-1.5 pr-16 border border-gray-300 rounded transition-all cursor-pointer ${speciality === type ? "bg-indigo-100 text-black" : ""}`}
+                        >
+                            {type}
+                        </p>
+                    ))}
                 </div>
 
                 {/* Doctors list */}
                 <div className="w-full grid grid-cols-auto gap-4 gap-y-6">
                     {filterDoc.map((doctor) => {
-                        const averageRating = getAverageRating(doctor._id);
-                        
+                        const averageRating = doctorRatingsMap[doctor._id] || 0;
+
                         return (
                             <div
                                 onClick={() => navigate(`/appointment/${doctor._id}`)}

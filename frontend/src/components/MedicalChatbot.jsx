@@ -101,7 +101,7 @@ const MedicalChatbot = () => {
             <div
               key={index}
               className={`p-2 my-1 rounded-lg max-w-xs ${
-                message.type === "user" ? "bg-blue-500 text-white self-end ml-auto" : "bg-white text-gray-800"
+                message.type === "user" ? "bg-purple-500 text-white self-end ml-auto" : "bg-white text-gray-800"
               }`}
             >
               <strong>{message.sender}:</strong> {message.text}
@@ -138,7 +138,7 @@ const MedicalChatbot = () => {
           />
           <button
             onClick={() => sendMessage(inputText)}
-            className="ml-2 bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600"
+            className="ml-2 bg-primary text-white p-2 rounded-md hover:bg-purple-100"
           >
             Send
           </button>

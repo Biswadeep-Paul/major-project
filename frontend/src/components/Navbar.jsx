@@ -46,7 +46,7 @@ const Navbar = () => {
                     { path: "/about", label: "ABOUT" },
                     { path: "/contact", label: "CONTACT" },
 
-                    // { path: "/pres", label: "Prescriptions" }
+                    { path: "http://localhost:5175/", label: "AI" }
 
                 ].map((link, index) => (
                     <NavLink
@@ -156,7 +156,7 @@ const Navbar = () => {
                     >
                         <div className="flex justify-between items-center p-4 border-b">
                             <img
-                                src={assets.logo}
+                                src={assets.logo2}
                                 alt="Logo"
                                 className="w-32"
                             />
