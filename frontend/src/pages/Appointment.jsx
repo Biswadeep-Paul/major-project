@@ -240,6 +240,12 @@ const Appointment = () => {
                         
                         <button className="py-0.5 px-2 border text-xs rounded-full">{docInfo.experience}</button>
                     </div>
+                    
+                    
+                    <div className="flex items-center gap-2 text-sm mt-1 text-gray-600">
+                        <p>{docInfo.location}</p>
+                        
+                    </div>
 
                     <div className="mt-4">
                         <p className="flex items-center gap-1 text-sm font-medium text-gray-900">
