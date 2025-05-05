@@ -20,9 +20,15 @@
     "jspdf": "^3.0.1",
     "jspdf-autotable": "^5.0.2",
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     "lucide-react": "^0.507.0",
 >>>>>>> 854183ec4a06880ec122dae18f0fc891390d7f27
+=======
+    "lucide-react": "^0.507.0",
+=======
+>>>>>>> 99766ddfca07ca10007be5dea15c6c1caeac4649
+>>>>>>> 7a879c1f219219ee168c6b059916ec13a0bc7f3c
     "nanoid": "^5.1.5",
     "pdfmake": "^0.2.19",
     "react": "^18.3.1",

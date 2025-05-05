@@ -244,9 +244,13 @@ const Appointment = () => {
                     
                     <div className="flex items-center gap-2 text-sm mt-1 text-gray-600">
 
+
                         {/* <p>{docInfo.location}</p> */}
 
                         <p>{docInfo.location}</p>
+
+
+                        {/* <p>{docInfo.location}</p> */}
 
                         
                     </div>

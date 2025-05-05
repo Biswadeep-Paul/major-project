@@ -1,6 +1,8 @@
 
 node_modules/
 admin/node_modules/
+<<<<<<<<< Temporary merge branch 1
 env
 personal/
-
+=========
+>>>>>>>>> Temporary merge branch 2
