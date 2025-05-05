@@ -138,7 +138,7 @@ const changeAvailability = async (docId) => {
                 getAllAppointments()
             } else {
                 toast.error(data.message)
-            }
+            };
         } catch (error) {
             toast.error(error.message)
             console.log(error)
