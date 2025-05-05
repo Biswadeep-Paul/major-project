@@ -18,6 +18,7 @@ const doctorSchema = new mongoose.Schema({
         start: { type: String, default: '09:00' },
         end: { type: String, default: '17:00' }
     },
+    isActive: { type: Boolean, default: true },
     resetPasswordToken: String,
     resetPasswordExpires: Date,
      ratings: { type: Number ,ref:'Rating'}, // Store multiple ratings

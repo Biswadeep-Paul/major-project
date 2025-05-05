@@ -149,7 +149,37 @@ const allDoctors = async (req, res) => {
         res.json({ success: false, message: error.message })
     }
 }
+const toggleDoctorAccess = async (req, res) => {
+    try {
+        const { doctorId } = req.body;
+        
+        if (!doctorId) {
+            return res.json({ success: false, message: "Doctor ID is required" });
+        }
 
+        const doctor = await doctorModel.findById(doctorId);
+        if (!doctor) {
+            return res.json({ success: false, message: "Doctor not found" });
+        }
+
+        // Toggle the isActive status
+        const updatedDoctor = await doctorModel.findByIdAndUpdate(
+            doctorId,
+            { isActive: !doctor.isActive },
+            { new: true }
+        ).select('-password');
+
+        res.json({ 
+            success: true, 
+            message: `Doctor access ${updatedDoctor.isActive ? 'restored' : 'revoked'}`,
+            doctor: updatedDoctor
+        });
+
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: error.message });
+    }
+}
 // API to get dashboard data for admin panel
 const adminDashboard = async (req, res) => {
     try {
@@ -171,6 +201,8 @@ const adminDashboard = async (req, res) => {
         console.log(error)
         res.json({ success: false, message: error.message })
     }
+    // API to revoke/restore doctor access
+
 }
 
 export {
@@ -179,5 +211,6 @@ export {
     appointmentCancel,
     addDoctor,
     allDoctors,
-    adminDashboard
+    adminDashboard,
+    toggleDoctorAccess
 }
