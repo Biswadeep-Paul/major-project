@@ -19,7 +19,10 @@
     "fast-glob": "^3.3.3",
     "jspdf": "^3.0.1",
     "jspdf-autotable": "^5.0.2",
+<<<<<<< HEAD
     "lucide-react": "^0.507.0",
+=======
+>>>>>>> 99766ddfca07ca10007be5dea15c6c1caeac4649
     "nanoid": "^5.1.5",
     "pdfmake": "^0.2.19",
     "react": "^18.3.1",
