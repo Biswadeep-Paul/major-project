@@ -243,7 +243,11 @@ const Appointment = () => {
                     
                     
                     <div className="flex items-center gap-2 text-sm mt-1 text-gray-600">
+<<<<<<< HEAD
+                        <p>{docInfo.location}</p>
+=======
                         {/* <p>{docInfo.location}</p> */}
+>>>>>>> 99766ddfca07ca10007be5dea15c6c1caeac4649
                         
                     </div>
 
