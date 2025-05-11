@@ -64,6 +64,7 @@ const loginDoctor = async (req, res) => {
     }
 }
 // Generate and send password reset token
+// Generate and send password reset token
 const forgotPassword = async (req, res) => {
     try {
         const { email } = req.body;
@@ -71,7 +72,7 @@ const forgotPassword = async (req, res) => {
         // Find doctor by email
         const doctor = await doctorModel.findOne({ email });
         if (!doctor) {
-            return res.status(404).json({ success: false, message: 'Doctor not found' });
+            return res.status(404).json({ success: false, message: 'If this email exists, a reset link has been sent' });
         }
 
         // Generate reset token (expires in 1 hour)
@@ -81,23 +82,21 @@ const forgotPassword = async (req, res) => {
             { expiresIn: '1h' }
         );
 
-        // Save token to database (optional but recommended)
+        // Save token to database
         await doctorModel.findByIdAndUpdate(doctor._id, { 
             resetPasswordToken: resetToken,
             resetPasswordExpires: Date.now() + 3600000 // 1 hour from now
         });
 
         // In a real app, you would send an email here with the reset link
-        // For this example, we'll just return the token (in production, never do this)
+        // For development, we'll log it to console
         const resetUrl = `${req.headers.origin}/reset-password?token=${resetToken}`;
-        
-        // TODO: Send email with resetUrl in production
         console.log(`Password reset link: ${resetUrl}`);
         
         res.json({ 
             success: true, 
-            message: 'Password reset link sent to email',
-            token: resetToken // Remove this in production - only for testing
+            message: 'If this email exists, a password reset link has been sent',
+            token:resetUrl
         });
 
     } catch (error) {
@@ -134,6 +133,14 @@ const resetPassword = async (req, res) => {
         // Verify token
         const decoded = jwt.verify(token, process.env.JWT_SECRET + doctor.password);
         
+        // Check password length
+        if (newPassword.length < 6) {
+            return res.status(400).json({
+                success: false,
+                message: 'Password must be at least 6 characters'
+            });
+        }
+
         // Hash new password
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(newPassword, salt);
