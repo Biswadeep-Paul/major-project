@@ -2,126 +2,130 @@ import React, { useContext, useEffect, useState } from "react";
 import { AppContext } from "../context/AppContext";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 
 const Login = () => {
+    const { backendUrl, token, setToken } = useContext(AppContext);
+    const navigate = useNavigate();
 
-    const {backendUrl,token,setToken} = useContext(AppContext)
-    const navigate = useNavigate()
-
-    const [state, setState] = useState("Sign Up");
+    const [mode, setMode] = useState("Sign Up");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [name, setName] = useState("");
 
     const onSubmitHandler = async (event) => {
         event.preventDefault();
-        console.log({ name, email, password, state });
 
         try {
-            if (state === 'Sign Up') {
-                
-                const {data} = await axios.post(backendUrl+'/api/user/register',{name,password,email})
+            if (mode === "Sign Up") {
+                const { data } = await axios.post(`${backendUrl}/api/user/register`, {
+                    name,
+                    email,
+                    password,
+                });
                 if (data.success) {
-                    localStorage.setItem('token', data.token)
-                    setToken(data.token)
-                }else{
-                    toast.error(data.message)
+                    localStorage.setItem("token", data.token);
+                    setToken(data.token);
+                } else {
+                    toast.error(data.message);
                 }
-            }else{
-               
-                const {data} = await axios.post(backendUrl+'/api/user/login',{password,email})
+            } else {
+                const { data } = await axios.post(`${backendUrl}/api/user/login`, {
+                    email,
+                    password,
+                });
                 if (data.success) {
-                    localStorage.setItem('token', data.token)
-                    setToken(data.token)
-                }else{
-                    toast.error(data.message)
+                    localStorage.setItem("token", data.token);
+                    setToken(data.token);
+                } else {
+                    toast.error(data.message);
                 }
-
             }
         } catch (error) {
-            toast.error(error.message)
+            toast.error(error.response?.data?.message || "Something went wrong");
         }
     };
 
-    useEffect(()=>{
-        if(token) {
-            navigate('/')
-            toast.success('User logged In successfully')
+    useEffect(() => {
+        if (token) {
+            navigate("/");
+            toast.success("User logged in successfully");
         }
-    },[token])
-
+    }, [token]);
 
     return (
-        <form 
-            onSubmit={onSubmitHandler} 
-            className="min-h-[80vh] flex items-center justify-center px-4"
-        >
-            <div className="flex flex-col gap-4 p-8 w-full max-w-sm border rounded-xl text-gray-700 shadow-lg bg-white">
-                {/* Heading */}
-                <h2 className="text-xl font-semibold text-center">
-                    {state === "Sign Up" ? "Create Account" : "Welcome Back"}
+        <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+            <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
+                <h2 className="text-3xl font-semibold text-center mb-6 text-gray-800">
+                    {mode === "Sign Up" ? "Create Account" : "Welcome Back"}
                 </h2>
-                <p className="text-sm text-center text-gray-500">
-                    {state === "Sign Up" ? "Sign up to book appointments" : "Log in to your account"}
-                </p>
 
-                {/* Input Fields */}
-                {state === "Sign Up" && (
-                    <div className="flex flex-col">
-                        <label className="text-sm font-medium">Full Name</label>
-                        <input 
-                            type="text" 
-                            onChange={(e) => setName(e.target.value)} 
-                            value={name} 
-                            className="border p-2 rounded-md focus:outline-primary"
+                {/* Toggle Buttons */}
+                <div className="flex justify-center gap-4 mb-6">
+                    {["Sign Up", "Login"].map((type) => (
+                        <button
+                            key={type}
+                            onClick={() => setMode(type)}
+                            className={`px-5 py-2 rounded-full text-sm font-medium transition ${mode === type
+                                ? "bg-primary text-white shadow"
+                                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                                }`}
+                        >
+                            {type}
+                        </button>
+                    ))}
+                </div>
+
+                {/* Form */}
+                <form onSubmit={onSubmitHandler} className="space-y-4">
+                    {mode === "Sign Up" && (
+                        <input
+                            type="text"
+                            placeholder="Full Name"
+                            className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-primary"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
                             required
                         />
-                    </div>
-                )}
+                    )}
 
-                <div className="flex flex-col">
-                    <label className="text-sm font-medium">Email</label>
-                    <input 
-                        type="email" 
-                        onChange={(e) => setEmail(e.target.value)} 
-                        value={email} 
-                        className="border p-2 rounded-md focus:outline-primary"
+                    <input
+                        type="email"
+                        placeholder="Email"
+                        className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-primary"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                         required
                     />
-                </div>
-
-                <div className="flex flex-col">
-                    <label className="text-sm font-medium">Password</label>
-                    <input 
-                        type="password" 
-                        onChange={(e) => setPassword(e.target.value)} 
-                        value={password} 
-                        className="border p-2 rounded-md focus:outline-primary"
+                    <input
+                        type="password"
+                        placeholder="Password"
+                        className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-primary"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
                         required
                     />
-                </div>
 
-                {/* Submit Button */}
-                <button 
-                    type="submit" 
-                    className="w-full bg-primary text-white p-2 rounded-md font-semibold hover:bg-primary-dark transition-all"
-                >
-                    {state === "Sign Up" ? "Create Account" : "Login"}
-                </button>
+                    {mode === "Login" && (
+                        <div className="flex justify-between text-sm font-medium">
+                            <Link to="#" className="text-primary hover:underline">
+                                Forgot Password?
+                            </Link>
+                            <Link to="#" className="text-primary hover:underline">
+                                Reset Password?
+                            </Link>
+                        </div>
+                    )}
 
-                {/* Toggle Button */}
-                <p className="text-center text-sm">
-                    {state === "Sign Up" ? "Already have an account?" : "Don't have an account?"} 
-                    <span 
-                        onClick={() => setState(state === "Sign Up" ? "Login" : "Sign Up")} 
-                        className="text-primary cursor-pointer font-semibold ml-1 hover:underline"
+                    <button
+                        type="submit"
+                        className="w-full py-2 rounded text-white bg-primary hover:bg-primary-dark transition"
                     >
-                        {state === "Sign Up" ? "Login here" : "Sign up"}
-                    </span>
-                </p>
+                        {mode === "Sign Up" ? "Create Account" : "Login"}
+                    </button>
+                </form>
             </div>
-        </form>
+        </div>
     );
 };
 

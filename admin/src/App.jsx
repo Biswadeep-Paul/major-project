@@ -1,8 +1,10 @@
 import React, { useContext } from 'react';
-import { DoctorContext } from './context/DoctorContext';
-import { AdminContext } from './context/AdminContext';
 import { Route, Routes } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'; // ✅ Toastify styles
+
+import { DoctorContext } from './context/DoctorContext';
+import { AdminContext } from './context/AdminContext';
 
 import Navbar from './components/Navbar';
 import Sidebar from './components/Sidebar';
@@ -23,14 +25,15 @@ const App = () => {
 
   return (
     <>
-      <ToastContainer />
-      <Routes>
-        {/* Public routes (no login required) */}
-        
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password/" element={<ResetPassword />} />
+      {/* ✅ Global Toast Container */}
+      <ToastContainer/>
 
-        {/* Protected routes (requires login) */}
+      <Routes>
+        {/* Public Routes */}
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+
+        {/* Protected Routes */}
         {dToken || aToken ? (
           <Route
             path="*"
@@ -53,7 +56,7 @@ const App = () => {
             }
           />
         ) : (
-          // If not logged in, any route other than the public ones redirects to login
+          // If not logged in, redirect to login
           <Route path="*" element={<Login />} />
         )}
       </Routes>
