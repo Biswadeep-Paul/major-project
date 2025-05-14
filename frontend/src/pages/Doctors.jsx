@@ -171,7 +171,9 @@ const Doctors = () => {
             {/* Search */}
             <div className="w-full mb-8">
                 <div className="flex flex-col">
-                    <h1 className="text-2xl font-bold text-gray-800 mb-2">Find a Doctor</h1>
+                    <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+                    Find A <span className="text-transparent bg-clip-text bg-primary">Doctor</span>
+                </h2>
                     <p className="text-gray-600 mb-4">Browse through our specialist doctors</p>
                     <input
                         type="text"
@@ -189,7 +191,7 @@ const Doctors = () => {
                     {renderFilterSection("Speciality", "speciality")}
                     {renderFilterSection("Location", "location")}
                     {renderFilterSection("Experience (years)", "experience")}
-                    {renderFilterSection("Consultation Fees", "fees")}
+                    {renderFilterSection("Consultation Fees (Rs.)", "fees")}
                 </div>
 
                 {/* Doctors List */}
