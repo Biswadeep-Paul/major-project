@@ -58,9 +58,9 @@ const RelatedDoctors = ({ speciality, docId }) => {
 
     return (
         <div className="flex flex-col items-center gap-4 my-16 text-gray-900 md:mx-10">
-            <h1 className="text-3xl font-medium">AI Recommended Doctors</h1>
-            <p className="sm:w-1/3 text-center text-sm">Based on experience, rating, specialization, and location.</p>
-            
+            {/* <h1 className="text-3xl font-medium">AI Recommended Doctors</h1>
+            <p className="sm:w-1/3 text-center text-sm">Based on experience, rating, specialization, and location.</p> */}
+
             <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 pt-5 gap-y-6 px-3 sm:px-6">
                 {relDoc.length > 0 ? (
                     relDoc.map((item, index) => (
@@ -78,9 +78,9 @@ const RelatedDoctors = ({ speciality, docId }) => {
                                 alt={`Dr. ${item.name}`}
                             />
                             <div className="p-4">
-                                <div className="flex items-center gap-2 text-sm text-green-500">
-                                    <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                                    <p>Available</p>
+                                <div className={`flex items-center gap-2 text-sm mb-2 ${item.available ? "text-green-600" : "text-red-600"}`}>
+                                    <span className={`w-2 h-2 rounded-full ${item.available ? "bg-green-500" : "bg-red-500"}`}></span>
+                                    <span>{item.available ? "Available" : "Not Available"}</span>
                                 </div>
                                 <p className="text-gray-900 text-lg font-medium">{item.name}</p>
                                 <p className="text-gray-600 text-sm">{item.speciality}</p>

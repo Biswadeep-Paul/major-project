@@ -78,34 +78,34 @@ const Appointment = () => {
     const generateAvailableSlots = () => {
         const slots = [];
         const today = new Date();
-        
+
         // Get doctor's preferences or use defaults
         const daysPref = docInfo.preferredDays || ['MON', 'TUE', 'WED', 'THU', 'FRI'];
         const startTime = docInfo.preferredHours?.start || '09:00';
         const endTime = docInfo.preferredHours?.end || '17:00';
-        
+
         // Convert start/end times to hours and minutes
         const [startHour, startMin] = startTime.split(':').map(Number);
         const [endHour, endMin] = endTime.split(':').map(Number);
-    
+
         for (let i = 0; i < 14; i++) { // Show 2 weeks of availability
             const currentDate = new Date(today);
             currentDate.setDate(today.getDate() + i);
             const dayName = daysOfWeek[currentDate.getDay()];
-            
+
             // Only show days the doctor prefers
             if (!daysPref.includes(dayName)) continue;
-    
+
             const timeSlots = [];
             const slotDate = new Date(currentDate);
-            
+
             // Set start time
             slotDate.setHours(startHour, startMin, 0, 0);
-            
+
             // Set end time
             const slotEnd = new Date(currentDate);
             slotEnd.setHours(endHour, endMin, 0, 0);
-            
+
             // Generate time slots
             while (slotDate < slotEnd) {
                 timeSlots.push({
@@ -114,12 +114,12 @@ const Appointment = () => {
                 });
                 slotDate.setMinutes(slotDate.getMinutes() + 30);
             }
-    
+
             if (timeSlots.length > 0) {
                 slots.push(timeSlots);
             }
         }
-    
+
         setDocSlots(slots);
     };
     const bookAppointment = async () => {
@@ -237,11 +237,11 @@ const Appointment = () => {
 
                     <div className="flex items-center gap-2 text-sm mt-1 text-gray-600">
                         <p>{docInfo.degree} - {docInfo.speciality}</p>
-                        
+
                         <button className="py-0.5 px-2 border text-xs rounded-full">{docInfo.experience}</button>
                     </div>
-                    
-                    
+
+
                     <div className="flex items-center gap-2 text-sm mt-1 text-gray-600">
 
 
@@ -252,7 +252,7 @@ const Appointment = () => {
 
                         {/* <p>{docInfo.location}</p> */}
 
-                        
+
                     </div>
 
                     <div className="mt-4">
@@ -262,37 +262,37 @@ const Appointment = () => {
                         </p>
                         <p className="text-sm text-gray-500 mt-1">{docInfo.about}</p>
                     </div>
-                    
 
-<div className="mt-6">
-  <div className="flex items-center gap-2 text-sm font-semibold text-gray-800 uppercase tracking-wider">
-    <CalendarDays className="w-4 h-4 text-purple-500" />
-    Timing & Availability
-  </div>
 
-  <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between bg-gray-50 border border-gray-200 rounded-lg p-4">
-    {/* Days */}
-    <div className="flex items-center gap-2 flex-wrap">
-      <span className="font-medium text-gray-700">Days:</span>
-      {(Array.isArray(docInfo.preferredDays) ? docInfo.preferredDays : ['MON', 'TUE', 'WED', 'THU', 'FRI']).map((day, index) => (
-        <span
-          key={index}
-          className="bg-purple-100 text-indigo-700 px-2 py-0.5 rounded-full text-xs font-semibold"
-        >
-          {day}
-        </span>
-      ))}
-    </div>
+                    <div className="mt-6">
+                        <div className="flex items-center gap-2 text-sm font-semibold text-gray-800 uppercase tracking-wider">
+                            <CalendarDays className="w-4 h-4 text-purple-500" />
+                            Timing & Availability
+                        </div>
 
-    {/* Time */}
-    <div className="flex items-center gap-2">
-      <Clock className="w-4 h-4 text-purple-500" />
-      <span className="text-sm text-gray-700">
-        {docInfo.preferredHours?.start || "09:00"} - {docInfo.preferredHours?.end || "17:00"}
-      </span>
-    </div>
-  </div>
-</div>
+                        <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between bg-gray-50 border border-gray-200 rounded-lg p-4">
+                            {/* Days */}
+                            <div className="flex items-center gap-2 flex-wrap">
+                                <span className="font-medium text-gray-700">Days:</span>
+                                {(Array.isArray(docInfo.preferredDays) ? docInfo.preferredDays : ['MON', 'TUE', 'WED', 'THU', 'FRI']).map((day, index) => (
+                                    <span
+                                        key={index}
+                                        className="bg-purple-100 text-indigo-700 px-2 py-0.5 rounded-full text-xs font-semibold"
+                                    >
+                                        {day}
+                                    </span>
+                                ))}
+                            </div>
+
+                            {/* Time */}
+                            <div className="flex items-center gap-2">
+                                <Clock className="w-4 h-4 text-purple-500" />
+                                <span className="text-sm text-gray-700">
+                                    {docInfo.preferredHours?.start || "09:00"} - {docInfo.preferredHours?.end || "17:00"}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
 
                     <p className="text-gray-500 font-medium mt-4">
                         Appointment Fee: <span className="text-gray-600">{currencySymbol}{docInfo.fees}</span>
@@ -345,10 +345,10 @@ const Appointment = () => {
                                                     if (!isBooked) setSlotTime(slot.time);
                                                 }}
                                                 className={`text-sm px-5 py-2 rounded-lg cursor-pointer select-none w-full min-w-[90px] transition-colors ${isBooked
-                                                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                                                        : isSelected
-                                                            ? 'bg-primary text-white'
-                                                            : 'border border-gray-200 hover:bg-gray-50'
+                                                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                                    : isSelected
+                                                        ? 'bg-primary text-white'
+                                                        : 'border border-gray-200 hover:bg-gray-50'
                                                     }`}
                                                 disabled={isBooked}
                                             >
@@ -448,6 +448,15 @@ const Appointment = () => {
             </div>
 
             {/* Related Doctors */}
+            <div className="flex flex-col justify-center items-center text-center pt-5 mt-10">
+                <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+                    AI <span className="text-transparent bg-clip-text bg-primary">Recommended Doctors</span>
+                </h2>
+                <p className="sm:w-1/3 text-sm">
+                    Based on experience, rating, specialization, and location.
+                </p>
+            </div>
+
             <RelatedDoctors docId={docId} speciality={docInfo.speciality} />
         </div>
     );
