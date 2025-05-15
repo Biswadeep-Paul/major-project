@@ -8,6 +8,23 @@ const DoctorProfile = () => {
     const { dToken, profileData, setProfileData, getProfileData } = useContext(DoctorContext)
     const { currency, backendUrl } = useContext(AppContext)
     const [isEdit, setIsEdit] = useState(false)
+    const [loading, setLoading] = useState(true) // Add loading state
+    const [error, setError] = useState(null) // Add error state
+
+    // Modified function to handle loading and errors
+    const fetchProfileData = async () => {
+        try {
+            setLoading(true)
+            setError(null)
+            await getProfileData()
+        } catch (err) {
+            console.error("Error fetching profile data:", err)
+            setError(err.message || "Failed to load profile data")
+            toast.error("Failed to load profile data")
+        } finally {
+            setLoading(false)
+        }
+    }
 
     const updateProfile = async () => {
         try {
@@ -42,7 +59,10 @@ const DoctorProfile = () => {
 
     useEffect(() => {
         if (dToken) {
-            getProfileData()
+            fetchProfileData()
+        } else {
+            setLoading(false) // If no token, don't keep showing loading
+            setError("Authentication required")
         }
     }, [dToken])
 
@@ -51,11 +71,11 @@ const DoctorProfile = () => {
         <label key={day} className="flex items-center gap-1 text-sm bg-gray-50 px-3 py-2 rounded-lg shadow-sm hover:bg-gray-100 transition-all">
             <input
                 type="checkbox"
-                checked={profileData.preferredDays?.includes(day)}
+                checked={profileData?.preferredDays?.includes(day)}
                 onChange={(e) => {
                     const newDays = e.target.checked
-                        ? [...(profileData.preferredDays || []), day]
-                        : (profileData.preferredDays || []).filter(d => d !== day);
+                        ? [...(profileData?.preferredDays || []), day]
+                        : (profileData?.preferredDays || []).filter(d => d !== day);
                     setProfileData(prev => ({ ...prev, preferredDays: newDays }));
                 }}
                 className="mr-1 accent-primary"
@@ -64,7 +84,44 @@ const DoctorProfile = () => {
         </label>
     )
 
-    return profileData && (
+    // Show loading state
+    if (loading) {
+        return (
+            <div className="bg-gradient-to-br from-blue-50 to-slate-50 min-h-screen flex items-center justify-center">
+                <div className="text-center">
+                    <div className="flex justify-center mb-4">
+                        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+                    </div>
+                    <p className="text-gray-600">Loading profile data...</p>
+                </div>
+            </div>
+        )
+    }
+
+    // Show error state
+    if (error || !profileData) {
+        return (
+            <div className="bg-gradient-to-br from-blue-50 to-slate-50 min-h-screen flex items-center justify-center">
+                <div className="bg-white p-8 rounded-xl shadow-lg max-w-md w-full text-center">
+                    <div className="flex justify-center mb-4 text-red-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                    </div>
+                    <h2 className="text-xl font-semibold text-gray-800 mb-2">Unable to load profile</h2>
+                    <p className="text-gray-600 mb-6">{error || "Profile data not available"}</p>
+                    <button 
+                        onClick={fetchProfileData} 
+                        className="px-6 py-2 bg-primary text-white font-medium rounded-lg shadow-md hover:bg-primary/90 transition-all"
+                    >
+                        Retry
+                    </button>
+                </div>
+            </div>
+        )
+    }
+
+    return (
         <div className="bg-gradient-to-br from-blue-50 to-slate-50 min-h-screen py-8 px-4">
             <div className="max-w-6xl mx-auto">
                 <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
@@ -100,11 +157,11 @@ const DoctorProfile = () => {
                             <div className="mt-6">
                                 <div className="flex items-center text-yellow-500 mb-2">
                                     {[...Array(5)].map((_, i) => (
-                                        <svg key={i} xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${i < Math.floor(profileData.averageRating) ? 'text-yellow-500' : 'text-gray-300'}`} viewBox="0 0 20 20" fill="currentColor">
+                                        <svg key={i} xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${i < Math.floor(profileData.rating || 0) ? 'text-yellow-500' : 'text-gray-300'}`} viewBox="0 0 20 20" fill="currentColor">
                                             <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                                         </svg>
                                     ))}
-                                    <span className="ml-2 text-gray-600 font-medium">{profileData.averageRating.toFixed(1)}</span>
+                                    <span className="ml-2 text-gray-600 font-medium">{(profileData.rating || 0).toFixed(1)}</span>
                                 </div>
 
                                 <div className="py-4 border-t border-b border-gray-100">
@@ -141,25 +198,25 @@ const DoctorProfile = () => {
                                                             type="text" 
                                                             onChange={(e) => setProfileData(prev => ({ 
                                                                 ...prev, 
-                                                                address: { ...prev.address, line1: e.target.value } 
+                                                                address: { ...(prev.address || {}), line1: e.target.value } 
                                                             }))} 
-                                                            value={profileData.address.line1} 
+                                                            value={profileData.address?.line1 || ''} 
                                                             className="border p-1 rounded mb-1 w-full"
                                                         />
                                                         <input 
                                                             type="text" 
                                                             onChange={(e) => setProfileData(prev => ({ 
                                                                 ...prev, 
-                                                                address: { ...prev.address, line2: e.target.value } 
+                                                                address: { ...(prev.address || {}), line2: e.target.value } 
                                                             }))} 
-                                                            value={profileData.address.line2} 
+                                                            value={profileData.address?.line2 || ''} 
                                                             className="border p-1 rounded w-full"
                                                         />
                                                     </>
                                                 ) : (
                                                     <>
-                                                        <p>{profileData.address.line1}</p>
-                                                        <p>{profileData.address.line2}</p>
+                                                        <p>{profileData.address?.line1 || 'No address specified'}</p>
+                                                        <p>{profileData.address?.line2 || ''}</p>
                                                     </>
                                                 )}
                                             </div>
@@ -175,18 +232,18 @@ const DoctorProfile = () => {
                                                 <input 
                                                     type="number" 
                                                     onChange={(e) => setProfileData(prev => ({ ...prev, fees: e.target.value }))} 
-                                                    value={profileData.fees} 
+                                                    value={profileData.fees || ''} 
                                                     className="border p-1 rounded w-24 text-center"
                                                 />
                                             ) : (
-                                                `${currency} ${profileData.fees}`
+                                                `${currency} ${profileData.fees || 0}`
                                             )}
                                         </p>
                                     </div>
                                     
                                     <div className="bg-blue-50 rounded-lg px-4 py-2 text-center flex-1">
                                         <p className="text-xs text-blue-500 font-medium">Experience</p>
-                                        <p className="text-gray-800 font-bold">{profileData.experience}</p>
+                                        <p className="text-gray-800 font-bold">{profileData.experience || 'N/A'}</p>
                                     </div>
                                 </div>
                             </div>
@@ -196,10 +253,10 @@ const DoctorProfile = () => {
                         <div className="md:w-2/3 p-8 pt-6">
                             <div className="flex justify-between items-start mb-6">
                                 <div>
-                                    <h1 className="text-3xl font-bold text-gray-800">{profileData.name}</h1>
+                                    <h1 className="text-3xl font-bold text-gray-800">{profileData.name || 'Doctor'}</h1>
                                     <div className="flex items-center mt-2">
-                                        <span className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-medium mr-2">{profileData.speciality}</span>
-                                        <span className="text-gray-600">{profileData.degree}</span>
+                                        <span className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-medium mr-2">{profileData.speciality || 'Specialist'}</span>
+                                        <span className="text-gray-600">{profileData.degree || 'MD'}</span>
                                     </div>
                                 </div>
                                 
@@ -241,10 +298,10 @@ const DoctorProfile = () => {
                                         onChange={(e) => setProfileData(prev => ({ ...prev, about: e.target.value }))} 
                                         className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-primary/50" 
                                         rows={6} 
-                                        value={profileData.about} 
+                                        value={profileData.about || ''} 
                                     />
                                 ) : (
-                                    <p className="text-gray-600 leading-relaxed">{profileData.about}</p>
+                                    <p className="text-gray-600 leading-relaxed">{profileData.about || 'No information provided.'}</p>
                                 )}
                             </div>
 
@@ -266,7 +323,7 @@ const DoctorProfile = () => {
                                                     type="checkbox" 
                                                     id="available" 
                                                     onChange={() => setProfileData(prev => ({ ...prev, available: !prev.available }))} 
-                                                    checked={profileData.available} 
+                                                    checked={profileData.available || false} 
                                                     className="accent-primary mr-2"
                                                 />
                                                 <label htmlFor="available" className="text-sm">Currently Available</label>
@@ -307,7 +364,7 @@ const DoctorProfile = () => {
                                                     onChange={(e) => setProfileData(prev => ({
                                                         ...prev,
                                                         preferredHours: {
-                                                            ...prev.preferredHours,
+                                                            ...(prev.preferredHours || {}),
                                                             start: e.target.value
                                                         }
                                                     }))}
@@ -325,7 +382,7 @@ const DoctorProfile = () => {
                                                     onChange={(e) => setProfileData(prev => ({
                                                         ...prev,
                                                         preferredHours: {
-                                                            ...prev.preferredHours,
+                                                            ...(prev.preferredHours || {}),
                                                             end: e.target.value
                                                         }
                                                     }))}

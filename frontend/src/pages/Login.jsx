@@ -108,10 +108,10 @@ const Login = () => {
 
                     {mode === "Login" && (
                         <div className="flex justify-between text-sm font-medium">
-                            <Link to="#" className="text-primary hover:underline">
+                            <Link to="/forgot-password-user" className="text-primary hover:underline">
                                 Forgot Password?
                             </Link>
-                            <Link to="#" className="text-primary hover:underline">
+                            <Link to="/reset-password-user" className="text-primary hover:underline">
                                 Reset Password?
                             </Link>
                         </div>

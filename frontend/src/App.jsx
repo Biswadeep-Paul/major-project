@@ -16,6 +16,8 @@ import { ToastContainer } from "react-toastify";
 import PrescriptionPage from "./components/PrescriptionPage";
 import HealthCard from "./components/HealthCard";
 import HealthCardGenerator from "./components/HealthCardGenerator";
+import ForgotPasswordUser from "./pages/ForgotPassword";
+import ResetPasswordUser from "./pages/ResetPassword";
 
 const App = () => {
   const [loading, setLoading] = useState(true);
@@ -75,6 +77,8 @@ const App = () => {
           <Route path="/healthcard" element={<HealthCard />} />
           <Route path="/appointment/:docId" element={<Appointment />} />
           <Route path="/pres" element={<PrescriptionPage />} />
+          <Route path="/forgot-password-user" element={<ForgotPasswordUser />} />
+          <Route path="/reset-password-user" element={<ResetPasswordUser/>} />
         </Routes>
         {!excludeNavbarFooter && <Footer /> } {/*Show Footer if route isn't excluded*/}
         {!excludeNavbarFooter && <MedicalChatbot /> } {/*Show medical chatbot  if route isn't excluded*/}

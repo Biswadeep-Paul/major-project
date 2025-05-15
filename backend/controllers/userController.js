@@ -99,7 +99,122 @@ const getProfile = async (req, res) => {
         res.json({ success: false, message: error.message })
     }
 }
+// Forgot password for users
+const forgotPasswordUser = async (req, res) => {
+    try {
+        const { email } = req.body;
+        
+        // Find user by email
+        const user = await userModel.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'If this email exists, a reset link has been sent' });
+        }
 
+        // Generate reset token (expires in 1 hour)
+        const resetToken = jwt.sign(
+            { id: user._id }, 
+            process.env.JWT_SECRET + user.password, 
+            { expiresIn: '1h' }
+        );
+
+        // Save token to database
+        await userModel.findByIdAndUpdate(user._id, { 
+            resetPasswordToken: resetToken,
+            resetPasswordExpires: Date.now() + 3600000 // 1 hour from now
+        });
+
+        // In a real app, you would send an email here with the reset link
+        // For development, we'll log it to console
+        const resetUrl = `${req.headers.origin}/reset-password-user?token=${resetToken}`;
+        console.log(`Password reset link: ${resetUrl}`);
+        
+        res.json({ 
+            success: true, 
+            message: 'If this email exists, a password reset link has been sent',
+            token: resetUrl
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+// Reset password with token for users
+const resetPasswordUser = async (req, res) => {
+    try {
+        const { token, newPassword } = req.body;
+        
+        if (!token || !newPassword) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Token and new password are required' 
+            });
+        }
+
+        // Find user by token
+        const user = await userModel.findOne({
+            resetPasswordToken: token,
+            resetPasswordExpires: { $gt: Date.now() }
+        });
+
+        if (!user) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Invalid or expired token' 
+            });
+        }
+
+        // Verify token
+        const decoded = jwt.verify(token, process.env.JWT_SECRET + user.password);
+        
+        // Check password length
+        if (newPassword.length < 8) {
+            return res.status(400).json({
+                success: false,
+                message: 'Password must be at least 8 characters'
+            });
+        }
+
+        // Hash new password
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+        // Update password and clear reset token
+        await userModel.findByIdAndUpdate(user._id, {
+            password: hashedPassword,
+            resetPasswordToken: undefined,
+            resetPasswordExpires: undefined
+        });
+
+        res.json({ 
+            success: true, 
+            message: 'Password reset successfully' 
+        });
+
+    } catch (error) {
+        console.error(error);
+        
+        if (error.name === 'TokenExpiredError') {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Token has expired' 
+            });
+        }
+        
+        if (error.name === 'JsonWebTokenError') {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Invalid token' 
+            });
+        }
+        
+        res.status(500).json({ 
+            success: false, 
+            message: error.message 
+        });
+    }
+};
 // API to update user profile
 const updateProfile = async (req, res) => {
 
@@ -390,5 +505,8 @@ export {
     // verifyRazorpay,
     // paymentStripe,
     // verifyStripe,
-        getPrescription
+        getPrescription,
+        forgotPasswordUser,
+        resetPasswordUser
+
 }
