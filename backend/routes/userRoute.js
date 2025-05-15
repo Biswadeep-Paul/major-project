@@ -8,7 +8,9 @@ import {
     bookAppointment, 
     listAppointment, 
     cancelAppointment,
-    getPrescription  // Import from userController instead
+    getPrescription,
+    forgotPasswordUser,
+    resetPasswordUser  // Import from userController instead
 } from '../controllers/userController.js';
 import upload from '../middleware/multer.js';
 import authUser from '../middleware/authUser.js';
@@ -26,5 +28,6 @@ userRouter.post("/cancel-appointment", authUser, cancelAppointment)
 //userRouter.post("/verifyRazorpay", authUser, verifyRazorpay)
 // userRouter.post("/payment-stripe", authUser, paymentStripe)
 // userRouter.post("/verifyStripe", authUser, verifyStripe)
-
+userRouter.post("/forgot-password", forgotPasswordUser);
+userRouter.post("/reset-password", resetPasswordUser);
 export default userRouter;

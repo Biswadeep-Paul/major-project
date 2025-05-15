@@ -14,6 +14,8 @@ const userSchema = new mongoose.Schema({
     premedical: { type: [String] },
     allergy:{type:[String]},
     blood:{type:String},
+    resetPasswordToken: String,
+    resetPasswordExpires: Date,
 
 })
 
