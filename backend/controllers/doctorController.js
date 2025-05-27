@@ -525,7 +525,119 @@ const getDoctorPrescriptions = async (req, res) => {
     }
 };
 
+//import appointmentModel from '../models/appointmentModel.js';
 
+// ✅ Download appointment report for a given date and time
+const downloadReport = async (req, res) => {
+    try {
+      const { date, timeRange } = req.query;  // Changed from startDate/endDate to just date
+      const doctorId = req.doctorId;
+  
+      if (!date) {
+        return res.status(400).json({ 
+          success: false,
+          message: "Date is required." 
+        });
+      }
+  
+      // Validate date format
+      const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+      if (!dateRegex.test(date)) {
+        return res.status(400).json({ 
+          success: false,
+          message: "Invalid date format. Use YYYY-MM-DD." 
+        });
+      }
+  
+      // Convert date from "YYYY-MM-DD" to "d_m_yyyy" format used in your database
+      const formatDateForDB = (dateStr) => {
+        const [year, month, day] = dateStr.split('-');
+        return `${parseInt(day)}_${parseInt(month)}_${year}`;
+      };
+  
+      const formattedDate = formatDateForDB(date);
+      
+      // Create Date object for comparison
+      const dateObj = new Date(date);
+  
+      console.log(`Searching appointments for ${formattedDate}`);
+  
+      // Build initial query
+      const query = { 
+        docId: doctorId,
+        slotDate: formattedDate  // Exact match for the single date
+      };
+  
+      // Get all appointments for the doctor for that date
+      let appointments = await appointmentModel.find(query)
+        .populate('userId', 'name email phone age address')
+        .sort({ slotTime: 1 });
+  
+      console.log(`Found ${appointments.length} appointments for ${formattedDate}`);
+  
+      // Add time range filter if provided
+      if (timeRange && timeRange.trim() !== '') {
+        console.log(`Applying time range filter: ${timeRange}`);
+        
+        // Handle different time range formats
+        let startTime, endTime;
+        
+        if (timeRange.includes('-')) {
+          [startTime, endTime] = timeRange.split('-').map(t => t.trim());
+        } else {
+          console.log('Time range format not recognized, skipping time filter');
+        }
+  
+        if (startTime && endTime) {
+          // Convert time to 24-hour format for comparison if needed
+          const convertTo24Hour = (timeStr) => {
+            if (timeStr.includes('AM') || timeStr.includes('PM')) {
+              const [time, period] = timeStr.split(/\s?(AM|PM)/i);
+              let [hours, minutes] = time.split(':').map(Number);
+              
+              if (period.toUpperCase() === 'PM' && hours !== 12) {
+                hours += 12;
+              } else if (period.toUpperCase() === 'AM' && hours === 12) {
+                hours = 0;
+              }
+              
+              return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+            }
+            return timeStr;
+          };
+  
+          const normalizedStartTime = convertTo24Hour(startTime);
+          const normalizedEndTime = convertTo24Hour(endTime);
+  
+          appointments = appointments.filter(appointment => {
+            const appointmentTime = convertTo24Hour(appointment.slotTime);
+            return appointmentTime >= normalizedStartTime && appointmentTime <= normalizedEndTime;
+          });
+  
+          console.log(`After time filtering (${normalizedStartTime} - ${normalizedEndTime}): ${appointments.length} appointments`);
+        }
+      }
+  
+      // Rest of the function remains the same...
+      // Just update the response to show single date instead of range
+      res.status(200).json({
+        success: true,
+        count: appointments.length,
+        date: formattedDate,
+        timeRange: timeRange || 'All Day',
+        stats,
+        data: enhancedAppointments
+      });
+  
+    } catch (error) {
+      console.error("Download report error:", error);
+      res.status(500).json({ 
+        success: false,
+        message: "Internal Server Error",
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      });
+    }
+  };
 
 export {
     loginDoctor,
@@ -541,5 +653,6 @@ export {
     addDoctorRating,
     getDoctorRatings,
     forgotPassword,
-    resetPassword
+    resetPassword,
+    downloadReport
 }
