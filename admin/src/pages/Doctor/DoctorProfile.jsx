@@ -6,17 +6,22 @@ import axios from 'axios'
 
 const DoctorProfile = () => {
     const { dToken, profileData, setProfileData, getProfileData } = useContext(DoctorContext)
-    const { currency, backendUrl } = useContext(AppContext)
+    const { currency, backendUrl, getRatingsData, ratings } = useContext(AppContext)
     const [isEdit, setIsEdit] = useState(false)
-    const [loading, setLoading] = useState(true) // Add loading state
-    const [error, setError] = useState(null) // Add error state
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState(null)
+    // Add state for ratings
 
-    // Modified function to handle loading and errors
     const fetchProfileData = async () => {
         try {
             setLoading(true)
             setError(null)
             await getProfileData()
+            // Fetch ratings data after profile data
+            if (profileData?._id) {
+    await getRatingsData(profileData._id)
+}
+
         } catch (err) {
             console.error("Error fetching profile data:", err)
             setError(err.message || "Failed to load profile data")
@@ -24,6 +29,26 @@ const DoctorProfile = () => {
         } finally {
             setLoading(false)
         }
+    }
+
+    // Calculate average rating
+    const calculateAverageRating = () => {
+        if (!ratings || ratings.length === 0) return 0
+        const sum = ratings.reduce((total, item) => total + item.rating, 0)
+        return sum / ratings.length
+    }
+
+    // Generate star ratings
+    const generateStars = (rating) => {
+        const stars = []
+        const starCount = Math.min(Math.round(rating), 5)
+        for (let i = 0; i < starCount; i++) {
+            stars.push(<span key={`filled-${i}`} className="text-yellow-500">★</span>)
+        }
+        for (let i = starCount; i < 5; i++) {
+            stars.push(<span key={`blank-${i}`} className="text-gray-300">★</span>)
+        }
+        return stars
     }
 
     const updateProfile = async () => {
@@ -61,12 +86,25 @@ const DoctorProfile = () => {
         if (dToken) {
             fetchProfileData()
         } else {
-            setLoading(false) // If no token, don't keep showing loading
+            setLoading(false)
             setError("Authentication required")
         }
     }, [dToken])
 
-    // Helper function to render day selector
+    useEffect(() => {
+    if (profileData?._id) {
+        const fetchRatings = async () => {
+            try {
+                await getRatingsData(profileData._id);
+            } catch (err) {
+                console.error("Error fetching ratings:", err);
+                toast.error("Failed to load ratings");
+            }
+        };
+        fetchRatings();
+    }
+}, [profileData?._id]);
+
     const renderDaySelector = (day) => (
         <label key={day} className="flex items-center gap-1 text-sm bg-gray-50 px-3 py-2 rounded-lg shadow-sm hover:bg-gray-100 transition-all">
             <input
@@ -84,7 +122,6 @@ const DoctorProfile = () => {
         </label>
     )
 
-    // Show loading state
     if (loading) {
         return (
             <div className="bg-gradient-to-br from-blue-50 to-slate-50 min-h-screen flex items-center justify-center">
@@ -98,7 +135,6 @@ const DoctorProfile = () => {
         )
     }
 
-    // Show error state
     if (error || !profileData) {
         return (
             <div className="bg-gradient-to-br from-blue-50 to-slate-50 min-h-screen flex items-center justify-center">
@@ -155,13 +191,14 @@ const DoctorProfile = () => {
                             </div>
 
                             <div className="mt-6">
-                                <div className="flex items-center text-yellow-500 mb-2">
-                                    {[...Array(5)].map((_, i) => (
-                                        <svg key={i} xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${i < Math.floor(profileData.rating || 0) ? 'text-yellow-500' : 'text-gray-300'}`} viewBox="0 0 20 20" fill="currentColor">
-                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                        </svg>
-                                    ))}
-                                    <span className="ml-2 text-gray-600 font-medium">{(profileData.rating || 0).toFixed(1)}</span>
+                                {/* Updated Rating Display */}
+                                <div className="flex items-center mb-2">
+                                    <div className="flex items-center">
+                                        {generateStars(calculateAverageRating())}
+                                        <span className="ml-2 text-gray-600 font-medium">
+                                            {calculateAverageRating().toFixed(1)} ({ratings.length} review)
+                                        </span>
+                                    </div>
                                 </div>
 
                                 <div className="py-4 border-t border-b border-gray-100">
@@ -392,6 +429,57 @@ const DoctorProfile = () => {
                                         </div>
                                     )}
                                 </div>
+                            </div>
+
+                            {/* Ratings Section */}
+                            <div className="mt-8">
+                                <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                                    </svg>
+                                    Patient Reviews
+                                </h3>
+
+                                {ratings.length > 0 ? (
+                                    <div className="bg-gray-50 rounded-xl p-4">
+                                        <div className="flex items-center mb-4">
+                                            <div className="text-3xl font-bold mr-4">
+                                                {calculateAverageRating().toFixed(1)}
+                                            </div>
+                                            <div>
+                                                <div className="flex items-center mb-1">
+                                                    {generateStars(calculateAverageRating())}
+                                                </div>
+                                                <p className="text-sm text-gray-600">
+                                                    Based on {ratings.length} review{ratings.length !== 1 ? 's' : ''}
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-4 max-h-64 overflow-y-auto pr-2">
+                                            {ratings.map((rating, index) => (
+                                                <div key={index} className="border-b border-gray-200 pb-4 last:border-0 last:pb-0">
+                                                    <div className="flex justify-between items-start">
+                                                        <p className="font-medium text-gray-800">
+                                                            {rating.userId?.name || 'Anonymous'}
+                                                        </p>
+                                                        <div className="flex items-center">
+                                                            {generateStars(rating.rating)}
+                                                        </div>
+                                                    </div>
+                                                    <p className="text-gray-600 text-sm mt-1">{rating.review}</p>
+                                                    <p className="text-xs text-gray-400 mt-1">
+                                                        {new Date(rating.createdAt).toLocaleDateString()}
+                                                    </p>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="bg-gray-50 rounded-xl p-4 text-center text-gray-500">
+                                        No reviews yet
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
