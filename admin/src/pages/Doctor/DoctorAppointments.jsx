@@ -23,45 +23,47 @@ const DoctorAppointments = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [prescriptionSearch, setPrescriptionSearch] = useState(''); // New state for prescription search
 
-  const generateAppointmentsReport = () => {
-    const docDefinition = {
-      pageSize: 'A4',
-      pageOrientation: 'landscape',
-      pageMargins: [40, 40, 40, 40],
-      content: [
-        { text: 'Doctor Appointments Report', style: 'header' },
-        {
-          table: {
-            headerRows: 1,
-            widths: ['auto', '*', '*', '*', '*'],
-            body: [
-              ['#', 'Patient Name', 'Patient ID', 'Payment', 'Fees'],
-              ...filteredAppointments.map((item, index) => [
-                index + 1,
-                item.userData.name,
-                item.userData._id,
-                item.payment ? 'Online' : 'Cash',
-                `${currency}${item.amount}`,
-              ]),
-            ],
-          },
-        },
-      ],
-      styles: {
-        header: {
-          fontSize: 18,
-          bold: true,
-          margin: [0, 0, 0, 10],
-        },
-      },
-      defaultStyle: {
-        fontSize: 10,
-        color: '#333'
-      },
-    };
+ 
+const generateAppointmentsReport = () => {
+  // Define CSV headers
+  const headers = ['#', 'Patient Name', 'Patient ID', 'Date', 'Time', 'Payment', 'Fees'];
+  
+  // Create CSV rows
+  const csvRows = [
+    headers.join(','), // Header row
+    ...filteredAppointments.map((item, index) => {
+      const row = [
+        index + 1,
+        `"${item.userData?.name || 'N/A'}"`, // Wrap in quotes to handle commas in names
+        `"${item.userData?._id || 'N/A'}"`,
+        `"${item.slotDate ? slotDateFormat(item.slotDate) : 'N/A'}"`,
+        `"${item.slotTime || 'N/A'}"`,
+        item.payment ? 'Online' : 'Cash',
+        `${currency}${item.amount || 0}`
+      ];
+      return row.join(',');
+    })
+  ];
+  
+  // Join all rows with newlines
+  const csvContent = csvRows.join('\n');
+  
+  // Create blob and download
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  
+  if (link.download !== undefined) {
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'appointments-report.csv');
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+};
 
-    pdfMake.createPdf(docDefinition).open();
-  };
+// Alternative version with better CSV formatting and special character handling
 
   useEffect(() => {
     const fetchData = async () => {

@@ -18,6 +18,7 @@ import DoctorDashboard from './pages/Doctor/DoctorDashboard';
 import DoctorProfile from './pages/Doctor/DoctorProfile';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
+import CSVDateFilter from "./pages/Doctor/CSVDateFilter";
 import logo2 from "/logo2.png"; 
 
 const App = () => {
@@ -86,6 +87,7 @@ const App = () => {
                     <Route path="/doctor-dashboard" element={<DoctorDashboard />} />
                     <Route path="/doctor-appointments" element={<DoctorAppointments />} />
                     <Route path="/doctor-profile" element={<DoctorProfile />} />
+                    <Route path="/csv" element={<CSVDateFilter/>} />
                   </Routes>
                 </div>
               </div>

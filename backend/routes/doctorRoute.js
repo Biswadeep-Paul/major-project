@@ -15,7 +15,8 @@ import {
  getDoctorRatings,
  addDoctorRating,
  forgotPassword,
-    resetPassword
+    resetPassword,
+    downloadReport 
   
 } from '../controllers/doctorController.js';
 import authDoctor from '../middleware/authDoctor.js';
@@ -40,5 +41,6 @@ doctorRouter.get("/:docId/ratings", getDoctorRatings);
 doctorRouter.post("/rate", authUser, addDoctorRating);
 doctorRouter.post("/forgot-password", forgotPassword);
 doctorRouter.post("/reset-password", resetPassword);
-
+// ✅ New route to download report
+doctorRouter.get('/appointments/report', authDoctor, downloadReport);
 export default doctorRouter;
