@@ -10,6 +10,7 @@ const AdminContextProvider = (props) => {
     const [appointments, setAppointments] = useState([])
     const [doctors, setDoctors] = useState([])
     const [dashData, setDashData] = useState(false)
+    const [ratings, setRatings] = useState([]) 
 // Add this to your context value
 const changeAvailability = async (docId) => {
     try {
@@ -50,6 +51,23 @@ const changeAvailability = async (docId) => {
         );
     }
 }
+
+
+ const getRatingsData = async (doctorId) => {
+    try {
+        const { data } = await axios.get(`${backendUrl}/api/doctor/${doctorId}/ratings`) // <-- replace docId in URL
+        if (data.success) {
+            setRatings(data.ratings)
+            return { ratings: data.ratings, avgRating: data.avgRating }
+        } else {
+            toast.error(data.message)
+        }
+    } catch (error) {
+        console.log(error);
+        toast.error(error.message)
+    }
+}
+
     // Getting all Doctors data from Database using API
     const getAllDoctors = async () => {
         try {
@@ -170,7 +188,8 @@ const changeAvailability = async (docId) => {
         getDashData,
         cancelAppointment,
         dashData,
-        changeAvailability
+        changeAvailability,
+        ratings,getRatingsData,
     }
 
     return (
