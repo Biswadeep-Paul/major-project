@@ -46,7 +46,7 @@ const Navbar = () => {
                     { path: "/about", label: "ABOUT" },
                     { path: "/contact", label: "CONTACT" },
 
-                    { path: "http://localhost:5175/", label: "AI" }
+                    { path: "https://incandescent-blini-8c9d3a.netlify.app/", label: "AI" }
 
                 ].map((link, index) => (
                     <NavLink

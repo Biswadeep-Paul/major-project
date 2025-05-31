@@ -271,7 +271,7 @@ const CSVDateFilter = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {filteredData.slice(0, 10).map((row, i) => (
+                {filteredData.slice(0, 100).map((row, i) => (
                   <tr key={i}>
                     {Object.values(row).map((value, j) => (
                       <td
@@ -286,7 +286,7 @@ const CSVDateFilter = () => {
                 {filteredData.length > 10 && (
                   <tr>
                     <td colSpan={Object.keys(filteredData[0]).length} className="text-center py-2 text-sm text-gray-500">
-                      Showing first 10 of {filteredData.length} records
+                      Showing first  of {filteredData.length} records
                     </td>
                   </tr>
                 )}
