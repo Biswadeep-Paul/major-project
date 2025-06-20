@@ -48,32 +48,35 @@ const TopDoctors = () => {
                 Book Best Doctors with top class facility at your FingerTips.
             </p>
             <div className="w-full grid grid-cols-auto gap-4 pt-5 gap-y-6 px-3 sm:px-6">
-                {doctors.slice(0, 10).map((doctor) => {
-                    const avgRating = doctorRatingsMap[doctor._id] || 0;
+  {doctors
+    .filter((doctor) => (doctorRatingsMap[doctor._id] || 0) > 4) // Filtering based on rating
+    .slice(0, 10)
+    .map((doctor) => {
+      const avgRating = doctorRatingsMap[doctor._id] || 0;
 
-                    return (
-                        <div
-                            onClick={() => { navigate(`/appointment/${doctor._id}`); scrollTo(0, 0); }}
-                            className="border border-blue-200 rounded-xl overflow-hidden cursor-pointer hover:translate-y-[-10px] transition-all duration-500"
-                            key={doctor._id}
-                        >
-                            <img className="bg-blue-50 w-full h-48 object-cover" src={doctor.image} alt={doctor.name} />
-                            <div className="p-4">
-                                <div className={`flex items-center gap-2 text-sm ${doctor.available ? "text-green-500" : "text-red-500"}`}>
-                                    <p className={`w-2 h-2 rounded-full ${doctor.available ? "bg-green-500 animate-ping" : "bg-red-500"}`}></p>
-                                    <p>{doctor.available ? "Available" : "Not Available"}</p>
-                                </div>
-                                <div className="flex items-center gap-1 mt-1">
-                                    {generateStars(avgRating)}
-                                    <span className="text-gray-500 text-xs ml-1">({avgRating.toFixed(1)})</span>
-                                </div>
-                                <p className="text-gray-900 text-lg font-medium mt-1">{doctor.name}</p>
-                                <p className="text-gray-600 text-sm">{doctor.speciality}</p>
-                            </div>
-                        </div>
-                    );
-                })}
+      return (
+        <div
+          onClick={() => { navigate(`/appointment/${doctor._id}`); scrollTo(0, 0); }}
+          className="border border-blue-200 rounded-xl overflow-hidden cursor-pointer hover:translate-y-[-10px] transition-all duration-500"
+          key={doctor._id}
+        >
+          <img className="bg-blue-50 w-full h-48 object-cover" src={doctor.image} alt={doctor.name} />
+          <div className="p-4">
+            <div className={`flex items-center gap-2 text-sm ${doctor.available ? "text-green-500" : "text-red-500"}`}>
+              <p className={`w-2 h-2 rounded-full ${doctor.available ? "bg-green-500 animate-ping" : "bg-red-500"}`}></p>
+              <p>{doctor.available ? "Available" : "Not Available"}</p>
             </div>
+            <div className="flex items-center gap-1 mt-1">
+              {generateStars(avgRating)}
+              <span className="text-gray-500 text-xs ml-1">({avgRating.toFixed(1)})</span>
+            </div>
+            <p className="text-gray-900 text-lg font-medium mt-1">{doctor.name}</p>
+            <p className="text-gray-600 text-sm">{doctor.speciality}</p>
+          </div>
+        </div>
+      );
+    })}
+</div>
             <button
                 onClick={() => { navigate('/doctors'); scrollTo(0, 0); }}
                 className="bg-blue-50 text-gray-600 px-12 py-3 rounded-full mt-10"

@@ -13,6 +13,17 @@ const Home = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
 
+  const calculateAge = (dob) => {
+    const birthDate = new Date(dob);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const m = today.getMonth() - birthDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    return age;
+  };
+
   useEffect(() => {
     const isProfileComplete = () => {
       const requiredFields = ["name", "phone", "address", "gender", "dob", "econtact", "premedical", "allergy", "blood"];
@@ -64,22 +75,16 @@ const Home = () => {
       <TopDoctors />
       <Banner />
 
-      {/* Enhanced Profile Update Modal */}
       {showPopup && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 z-50 p-4">
           <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            {/* Modal Header */}
             <div className="sticky top-0 bg-primary border-b px-6 py-4 flex justify-between items-center">
               <h2 className="text-2xl font-semibold text-white">Complete Your Profile</h2>
-              {/* <button 
-                onClick={() => setShowPopup(false)}
-                className="text-gray-500 hover:text-gray-700"
-              >
+              {/* <button onClick={() => setShowPopup(false)} className="text-gray-500 hover:text-gray-700">
                 <XMarkIcon className="h-6 w-6" />
               </button> */}
             </div>
-            
-            {/* Modal Body */}
+
             <div className="p-6">
               <p className="text-gray-600 mb-6">
                 To ensure we can provide you with the best possible care, please complete your profile information.
@@ -87,10 +92,9 @@ const Home = () => {
 
               <form onSubmit={(e) => { e.preventDefault(); updateUserProfileData(); }}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Personal Information */}
                   <div className="space-y-4">
                     <h3 className="text-lg font-medium text-gray-900 border-b pb-2">Personal Information</h3>
-                    
+
                     <div>
                       <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
                       <input
@@ -124,7 +128,11 @@ const Home = () => {
                         type="date"
                         className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border"
                         value={userData.dob || ''}
-                        onChange={(e) => setUserData(prev => ({ ...prev, dob: e.target.value }))}
+                        onChange={(e) => {
+                          const dob = e.target.value;
+                          const age = calculateAge(dob);
+                          setUserData(prev => ({ ...prev, dob, age }));
+                        }}
                         required
                       />
                     </div>
@@ -137,8 +145,7 @@ const Home = () => {
                         className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border"
                         placeholder=""
                         value={userData.age || ''}
-                        onChange={(e) => setUserData(prev => ({ ...prev, age: e.target.value }))}
-                        required
+                        readOnly
                       />
                     </div>
 
@@ -160,10 +167,9 @@ const Home = () => {
                     </div>
                   </div>
 
-                  {/* Contact & Medical Information */}
                   <div className="space-y-4">
                     <h3 className="text-lg font-medium text-gray-900 border-b pb-2">Contact & Medical Information</h3>
-                    
+
                     <div>
                       <label htmlFor="econtact" className="block text-sm font-medium text-gray-700 mb-1">Emergency Contact</label>
                       <input
@@ -229,10 +235,9 @@ const Home = () => {
                   </div>
                 </div>
 
-                {/* Medical History Section */}
                 <div className="mt-6 space-y-4">
                   <h3 className="text-lg font-medium text-gray-900 border-b pb-2">Medical History</h3>
-                  
+
                   <div>
                     <label htmlFor="premedical" className="block text-sm font-medium text-gray-700 mb-1">Pre-existing Medical Conditions</label>
                     <textarea
@@ -258,7 +263,6 @@ const Home = () => {
                   </div>
                 </div>
 
-                {/* Form Actions */}
                 <div className="mt-8 flex justify-end space-x-3">
                   <button
                     type="button"
