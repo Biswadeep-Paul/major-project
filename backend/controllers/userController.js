@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import express from 'express'
 import bcrypt from "bcryptjs";
 import validator from "validator";
 import userModel from "../models/userModel.js";
@@ -6,6 +7,9 @@ import doctorModel from "../models/doctorModel.js";
 import appointmentModel from "../models/appointmentModel.js";
 import prescriptionModel from "../models/prescriptionModel.js";
 import { v2 as cloudinary } from 'cloudinary'
+// import userRouter from "../routes/userRoute.js";
+
+
 // import stripe from "stripe";
 // import razorpay from 'razorpay';
 
@@ -460,6 +464,31 @@ const listAppointment = async (req, res) => {
 // }
 // API to get prescriptions for a user
 // 
+
+
+// In your backend routes (e.g., userRoutes.js)
+const paymentStatus = async (req, res) => {
+  try {
+    const { appointmentId } = req.body;
+    
+    const updatedAppointment = await appointmentModel.findByIdAndUpdate(
+      appointmentId,
+      { payment: true }
+    );
+
+    if (!updatedAppointment) {
+      return res.status(404).json({ success: false, message: 'Appointment not found' });
+    }
+
+    res.json({ success: true, message: 'Payment status updated' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+
+
 const getPrescription = async (req, res) => {
     try {
         const { userId } = req.body; // Get userId from the authenticated request
@@ -507,6 +536,7 @@ export {
     // verifyStripe,
         getPrescription,
         forgotPasswordUser,
-        resetPasswordUser
+        resetPasswordUser,
+        paymentStatus
 
 }
