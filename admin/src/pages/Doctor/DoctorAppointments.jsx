@@ -18,6 +18,8 @@ const DoctorAppointments = () => {
   });
 
   const [filterUserId, setFilterUserId] = useState('');
+  const [selectedPatient, setSelectedPatient] = useState(null);
+
   const [filteredAppointments, setFilteredAppointments] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [isLoading, setIsLoading] = useState(true);
@@ -262,6 +264,42 @@ const generateAppointmentsReport = () => {
         ) : (
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
+              {selectedPatient && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="bg-white rounded-lg w-full max-w-md p-6 shadow-xl relative">
+      <button
+        onClick={() => setSelectedPatient(null)}
+        className="absolute top-3 right-4 text-gray-500 text-2xl hover:text-gray-700"
+      >
+        &times;
+      </button>
+      <h2 className="text-xl font-bold mb-4 text-center">Patient Details</h2>
+      <div className="space-y-2 text-sm text-gray-700">
+        <p className='text-center'><strong>Patient Id:</strong> {selectedPatient._id}</p>
+        <div className='bg-gray-100 rounded-lg p-5'>
+          <h1 className='text-xl font-bold mt-2 mb-2'>Personal Information:</h1>
+        <p><strong>Name:</strong> {selectedPatient.name}</p>
+        <p><strong>Email:</strong> {selectedPatient.email}</p>
+        <p><strong>Phone:</strong> {selectedPatient.phone}</p>
+        <p><strong>Age:</strong> {selectedPatient.age}</p>
+        <p><strong>Gender:</strong> {selectedPatient.gender}</p>
+        <p><strong>Address:</strong> {selectedPatient.address.line1}</p>
+        <p> {selectedPatient.address.line2}</p>
+
+        </div>
+        <div className='bg-gray-100 rounded-lg p-5'>
+          <h1 className='text-xl font-bold mt-2 mb-2'>Medical Information:</h1>
+        <p><strong>Pre Medical:</strong> {selectedPatient.premedical}</p>
+        <p><strong>Allergy:</strong> {selectedPatient.allergy}</p>
+        <p><strong>Blood Group:</strong> {selectedPatient.blood}</p>
+
+        </div>
+        {/* Add more fields if available */}
+      </div>
+    </div>
+  </div>
+)}
+
               <thead className="bg-gray-50">
                 <tr>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Patient</th>
@@ -276,7 +314,12 @@ const generateAppointmentsReport = () => {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {filteredAppointments.map((item, index) => (
-                  <tr key={index} className="hover:bg-gray-50 transition-colors">
+                  <tr
+  key={index}
+  className="hover:bg-gray-50 transition-colors cursor-pointer"
+  onClick={() => setSelectedPatient(item.userData)}
+>
+
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <div className="flex-shrink-0 h-10 w-10">
