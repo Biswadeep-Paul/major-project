@@ -361,6 +361,8 @@ const doctorProfile = async (req, res) => {
 const updateDoctorProfile = async (req, res) => {
     try {
         const { docId, fees, address, available,location,about, preferredDays, preferredHours } = req.body;
+        const imageFile = req.file
+
         await doctorModel.findByIdAndUpdate(docId, { 
             fees, 
             address, 
@@ -370,6 +372,15 @@ const updateDoctorProfile = async (req, res) => {
             preferredDays,
             preferredHours
         });
+
+        if (imageFile) {
+
+            // upload image to cloudinary
+            const imageUpload = await cloudinary.uploader.upload(imageFile.path, { resource_type: "image" })
+            const imageURL = imageUpload.secure_url
+
+            await userModel.findByIdAndUpdate(docId, { image: imageURL })
+        }
         res.json({ success: true, message: 'Profile Updated' });
     } catch (error) {
         console.log(error);
